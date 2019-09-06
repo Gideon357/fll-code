@@ -1,4 +1,5 @@
-// Nate Schmelkin
-// Gideon Grinberg
-// Kai Kim-Suzuki
-// Steven Reddy
+// Team Member: Nate Schmelkin
+// Team Member: Gideon Grinberg
+// Team Member: Kai Kim-Suzuki
+// Head Coach: Steven Reddy
+// Assistant Coach: Alex Schmelkin
