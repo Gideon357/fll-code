@@ -14,8 +14,8 @@ import math
 
 
 	def move(size, distance, speed = 75):
-		c = size        
-		distance = d
+		c = size
+		d = distance
 		speed = speed
 		r = d/c
 		tank_drive.on_for_rotations(SpeedPercent(speed), SpeedPercent(speed), r)
