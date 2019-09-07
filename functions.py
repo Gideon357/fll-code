@@ -12,16 +12,10 @@ import math
 #math allows for PI in equations, import all the other things for all EV3dev programs
 
 
-Class moveBlock():
-	# creates a class called "moveBlock"
-	def __init__(self,size,distance, speed = 75):
-		#initializes every object with params size,distance, speed
-		self.c = size        
-		self.distance = dist
-		self.speed = speed
+
 	def move(size, distance, speed = 75):
-		c = size        
-		distance = dist
+		c = size
+		d = distance
 		speed = speed
 		r = d/c
 		tank_drive.on_for_rotations(SpeedPercent(speed), SpeedPercent(speed), r)
