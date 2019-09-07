@@ -12,6 +12,6 @@ from ev3dev2.led import Leds
 
 	def move(size, distance, speed):
 		rotations = distance/size
-		tank_drive.on_for_rotations(SpeedPercent(speed), SpeedPercent(speed), r)
+		tank_drive.on_for_rotations(SpeedPercent(speed), SpeedPercent(speed), rotations)
 	def turn():
 	 #https://va-dcfll.org/distance-to-rotation-formula/ for formula for turning.
