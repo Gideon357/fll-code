@@ -47,4 +47,4 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
 
 ## TODO
 
-* Create new code repo for meetings and non-code documentation
+* ~~Create new code repo for meetings and non-code documentation~~
