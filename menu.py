@@ -42,21 +42,22 @@ class menu:
         objectName.run()
     def __del__(self):
         pass
-    def on_left(state)
+    def on_left(self,state)
         while b:
             if state:
                 currentProgram = currentProgram - 1
-    def on_right(state)
+    def on_right(self,state)
         while b:
             if state:
                 currentProgram = currentProgram + 1
-     def on_enter()
+     def on_enter(self)
         while b:
             objName = menuItems[currentProgram][objectName]
             objName.run()
-    def display():
+    def display(self):
         while b:
             console.text_at(menuItems[currentProgram][programName], True)
+    
 
 
 
