@@ -20,8 +20,15 @@ Roughly followed [vscode-hello-python](https://github.com/ev3dev/vscode-hello-py
 
 ### Install Python 3
 
+#### Install Python from Brew
 ```bash
 brew install python
+```
+
+#### Update to use brew python over system
+```bash
+# add to ~/.bash_profile
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 ```
 
 ### Create a venv for ev3dev2 programming
@@ -48,3 +55,4 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
 ## TODO
 
 * ~~Create new code repo for meetings and non-code documentation~~
+* Move meetings to new repo
