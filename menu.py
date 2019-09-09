@@ -14,10 +14,9 @@ from ev3dev2.console import Console
 
 button = Button()
 menuItems = []
-a = true
 displayNum = 0
 
-while a:
+while True:
     for i in range(len(menuItems)):
         menuItems[i] = "nil"
 
@@ -36,26 +35,22 @@ class menuObject:
 
 class menu:
 
-    def __init__(self):
-        b = true
-    def runProgram(objectName):
-        objectName.run()
     def __del__(self):
         pass
     def on_left(self,state)
-        while b:
+        while True:
             if state:
                 currentProgram = currentProgram - 1
-    def on_right(self,state)
-        while b:
+    def on_right(self, state)
+        while True:
             if state:
                 currentProgram = currentProgram + 1
-     def on_enter(self)
-        while b:
+    def on_enter(self)
+        while True:
             objName = menuItems[currentProgram][objectName]
             objName.run()
     def display(self):
-        while b:
+        while True:
             console.text_at(menuItems[currentProgram][programName], True)
     
 
