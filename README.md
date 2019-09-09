@@ -1,5 +1,10 @@
 # Griffy ev2dev2 setup (2019 FLL)
 
+## Quick Links to Docs
+
+* [ev3dev2 Homepage](https://sites.google.com/site/ev3devpython/)
+* [ev3dev2 documentation](https://python-ev3dev.readthedocs.io/en/ev3dev-stretch/)
+
 ## Setting up VS Code + Python
 
 ### Visual Studio Code
