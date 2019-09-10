@@ -46,9 +46,19 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
     "python.pythonPath": "~/.venvs/ev3dev2/bin/python3"
 ```
 
-## Connect EV3 to VS Code
+## Connect EV3 to VS Code and Internet
 
-### TODO: write instructions
+Follow the [bluetooth instructions at ev3dev.org](https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/)
+
+## Update ev3dev Libraries
+
+1. right click on ev3dev in EV3DEV DEVICE BROWSER
+2. select SSH
+3. run upgrade command below to update both python3 and micropython libraries
+
+```bash
+sudo apt update && sudo apt install python3-ev3dev2 micropython-ev3dev2
+```
 
 ## TODO
 
