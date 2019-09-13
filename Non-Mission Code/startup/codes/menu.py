@@ -1,8 +1,6 @@
 """
 This program will allow for a menu that displays all programs instead of the menu browser saving 20 seconds of time in loading.
-When this is complete, we will set it to automatically run on setup by runing the "run_on_setup.sh" file
 TODO:
-Create code that automatically adds .py files named under certain conventions 
 Add run at start
 """
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, SpeedPercent, MoveTank
@@ -34,7 +32,8 @@ class menuObject:
         currentProgram = currentProgram + 1 
 
 class menu:
-
+    def __init__(self):
+        pass
     def __del__(self):
         pass
     def on_left(self,state)
@@ -52,7 +51,10 @@ class menu:
     def display(self):
         while True:
             console.text_at(menuItems[currentProgram][programName], True)
-    
+
+
+
+
 
 
 
