@@ -2,8 +2,9 @@
 
 ## Quick Links to Docs
 
-* [ev3dev2 Homepage](https://sites.google.com/site/ev3devpython/)
+* [ev3dev2 Homepage](https://sites.google.com/site/ev3devpython/learn_ev3_python)
 * [ev3dev2 documentation](https://python-ev3dev.readthedocs.io/en/ev3dev-stretch/)
+* [EV3Dev Device Browser](https://github.com/ev3dev/vscode-ev3dev-browser/wiki/Settings)
 
 ## Setting up VS Code + Python
 
@@ -61,5 +62,3 @@ sudo apt update && sudo apt install python3-ev3dev2 micropython-ev3dev2
 ```
 
 ## TODO
-
-* Create new code repo for meetings and non-code documentation
