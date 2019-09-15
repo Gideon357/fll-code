@@ -20,12 +20,12 @@ class loader:
                 menuItems[i] = "nil"
 
     class menuObject:
-        def __init__(self, name, functionName, programNumber, programName):
+        def __init__(self, objName, functionName, programNumber, programName):
             self.functionName = functionName
             self.programName = programName
             self.programNumber = programNumber
-            self.name = name
-            menuItems[programNumber] = {"objectName": name, "programName":programName, "functionName":functionName}
+            self.objName = objName
+            menuItems[programNumber] = {"objectName": objName, "programName":programName, "functionName":functionName}
 
         def run(self):
             functionName
@@ -59,6 +59,11 @@ class loader:
         def display(self):
             while True:
                 console.text_at(menuItems[currentProgram][programName], True)
+def start():
+    mission_loader() = loader
 
 starter() = loader
 starter.motor_control() = loader.menuObject(loader.motor_control,motor_control.main(),2,Motor Control)
+starter.mission_loader() = loader.menuObject(loader.mission_loader,start(),1,Mission Programs)
+
+# initialize menuObjects as mission_loader.menuObject() below this line
