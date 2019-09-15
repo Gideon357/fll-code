@@ -4,5 +4,7 @@
     "editor.insertSpaces": true,
     "[markdown]": {
         "editor.tabSize": 2
-    }
+    },
+    "ev3devBrowser.download.include": "**/*.*py",
+    "ev3devBrowser.download.exclude": "{samples,Non-Mission Code}"
 }
