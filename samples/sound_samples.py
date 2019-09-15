@@ -2,7 +2,8 @@
 
 from ev3dev2.sound import Sound
 
-Sound.play_song((
+player = Sound()
+player.play_song((
     ('D4', 'e3'),      # intro anacrouse
     ('D4', 'e3'),
     ('D4', 'e3'),

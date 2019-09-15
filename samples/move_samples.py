@@ -9,4 +9,4 @@ tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 
 # drive in a turn for 5 rotations of the outer motor
 # the first two parameters can be unit classes or percentages.
-tank_drive.on_for_seconds(SpeedPercent(-50), SpeedPercent(-50), 10)
+tank_drive.on_for_seconds(SpeedPercent(30), SpeedPercent(30), 2)
