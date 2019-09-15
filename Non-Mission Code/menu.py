@@ -34,21 +34,30 @@ class loader:
 
     class menu:
         def __init__(self):
-            pass
+            on_left()
+            on_right()
+            on_enter()
         def __del__(self):
             pass
-        def on_left(self,state)
+        def on_left(self)
             while True:
-                if state:
+                if button.left:
                     currentProgram = currentProgram - 1
-        def on_right(self, state)
+                else:
+                    sleep(0.01)
+        def on_right(self)
             while True:
-                if state:
+                if button.left:
                     currentProgram = currentProgram + 1
+                else:
+                    sleep(0.01)
         def on_enter(self)
             while True:
-                objName = menuItems[currentProgram][objectName]
-                objName.run()
+                if button.enter:
+                    objName = menuItems[currentProgram][objectName]
+                    objName.run()
+                else:
+                    sleep(0.01)                        
         def display(self):
             while True:
                 console.text_at(menuItems[currentProgram][programName], True)
