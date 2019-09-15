@@ -9,7 +9,7 @@ from ev3dev2.sensor.lego import TouchSensor
 from ev3dev2.led import Leds
 from ev3dev2.button import Button
 from ev3dev2.console import Console
-
+import motor_control.py
 class loader:
     def __init__(self):
         button = Button()
@@ -59,4 +59,6 @@ class loader:
         def display(self):
             while True:
                 console.text_at(menuItems[currentProgram][programName], True)
-        
+
+starter() = loader
+starter.motor_control() = loader.menuObject(loader.motor_control,motor_control.main(),2,Motor Control)
