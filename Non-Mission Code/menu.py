@@ -20,7 +20,6 @@ class loader:
                 menuItems[i] = "nil"
 
     class menuObject:
-
         def __init__(self, name, functionName, programNumber, programName):
             self.functionName = functionName
             self.programName = programName
@@ -37,8 +36,7 @@ class loader:
             on_left()
             on_right()
             on_enter()
-        def __del__(self):
-            pass
+            display()
         def on_left(self)
             while True:
                 if button.left:
