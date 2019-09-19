@@ -10,8 +10,8 @@ from ev3dev2.sensor import INPUT_1
 from ev3dev2.sensor.lego import TouchSensor
 from ev3dev2.led import Leds
 
-def move(size, distance, speed):
+def move(size, distance_inches, speed):
 	rotations = distance/size
 	tank_drive.on_for_rotations(SpeedPercent(speed), SpeedPercent(speed), rotations)
 def turn():
-	#https://va-dcfll.org/distance-to-rotation-formula/ for formula for turning.
+	pass
