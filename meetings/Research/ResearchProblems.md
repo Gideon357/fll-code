@@ -35,3 +35,4 @@ Stuff I Hate in NYC
 * Shafts
 * Steaming Manholes
 * Heat
+* Mental Effects
