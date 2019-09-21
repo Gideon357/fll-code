@@ -34,6 +34,4 @@ Stuff I Hate in NYC
 * Doggie Doo-Doo
 * Shafts
 * Steaming Manholes
-* ~Social Problems~
-  * ~Diversity~
 * Heat
