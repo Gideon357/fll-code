@@ -3,6 +3,7 @@ This program will allow for a menu that displays all programs instead of the men
 TODO:
 Add run at start
 """
+#!/usr/bin/env python3 
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, SpeedPercent, MoveTank
 from ev3dev2.sensor import INPUT_1
 from ev3dev2.sensor.lego import TouchSensor
