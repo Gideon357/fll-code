@@ -1,9 +1,9 @@
-from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential
+from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent
 from ev3dev2.wheel import EV3Tire
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
-from button import Button
+from .button import Button
 from time import sleep
 
 # Config setting for Griffy
@@ -43,9 +43,6 @@ class Griffy(MoveDifferential):
         self.left_medium_motor = LEFT_MEDIUM_MOTOR_PORT
         self.right_medium_motor = RIGHT_MEDIUM_MOTOR_PORT
 
-    def on_for_distance(self, speed, distance):
-        pass
-
     def line_square(self, black_light_intensity, white_light_intensity):
         pass
 
@@ -57,3 +54,7 @@ class Griffy(MoveDifferential):
 
     def gyro_turn(self, degrees, speed):
         pass
+
+    def first_run(self):
+        self.on_for_distance(30, 520)
+        self.on_for_distance(-100, 520)
