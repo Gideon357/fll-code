@@ -14,10 +14,11 @@ RIGHT_MEDIUM_MOTOR_PORT = OUTPUT_D
 STUD_MM = 7
 WHEEL_CLASS = EV3Tire
 WHEEL_DISTANCE = STUD_MM * 11 # Center of wheels are 11 studs apart
-LEFT_COLOR_SENSOR_INPUT = INPUT_1
-LEFT_GYRO_SENSOR_INPUT = INPUT_2
-RIGHT_GYRO_SENSOR_INPUT = INPUT_3
-RIGHT_COLOR_SENSOR_INPUT = INPUT_4
+LEFT_GYRO_SENSOR_INPUT = INPUT_1
+LEFT_COLOR_SENSOR_INPUT = INPUT_2
+RIGHT_COLOR_SENSOR_INPUT = INPUT_3
+RIGHT_GYRO_SENSOR_INPUT = INPUT_4
+
 
 class Griffy(MoveDifferential):
     """
@@ -36,12 +37,19 @@ class Griffy(MoveDifferential):
         and all sensors.
         """
         super().__init__(LEFT_LARGE_MOTOR_PORT, RIGHT_LARGE_MOTOR_PORT, WHEEL_CLASS, WHEEL_DISTANCE)
-        self.left_color_sensor = LEFT_COLOR_SENSOR_INPUT
-        self.left_gyro_sensor = LEFT_GYRO_SENSOR_INPUT
-        self.right_gyro_sensor = RIGHT_GYRO_SENSOR_INPUT
-        self.right_color_sensor = RIGHT_COLOR_SENSOR_INPUT
-        self.left_medium_motor = LEFT_MEDIUM_MOTOR_PORT
-        self.right_medium_motor = RIGHT_MEDIUM_MOTOR_PORT
+        self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
+        self.cs = self.left_color_sensor
+        self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
+        self.right_gyro_sensor = GyroSensor(RIGHT_GYRO_SENSOR_INPUT)
+        self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
+        self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
+        self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
+        # Put a sound at the end to show when it is done.
+        self.start_tone()
+
+    def start_tone(self):
+        player = Sound()
+        player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
     def line_square(self, black_light_intensity, white_light_intensity):
         pass
