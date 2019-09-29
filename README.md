@@ -77,8 +77,7 @@ sudo apt update && sudo apt install python3-ev3dev2 micropython-ev3dev2
 ```
 ### Change EV3dev2 Hostname
 ```bash
-sudo nano /etc/hostname
-```
+ ```
 root pass: maker
 change the hostname on line 1
 
@@ -98,7 +97,7 @@ change "localhost" on the first line to the same hostname
 <kbd> enter </kbd>
 
 <kbd>CTRL</kbd>+<kbd>X</kbd>
-## List of Hostnames
+## List of Hostnames 
 First Griffy: Griffy_A
 
 Second_Griffy: Griffy_B
