@@ -19,7 +19,6 @@ Roughly followed [vscode-hello-python](https://github.com/ev3dev/vscode-hello-py
   * Python
 
 ### Install Homebrew, the OS X Package Manager
-
 ```bash
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
@@ -80,5 +79,33 @@ Follow the [bluetooth instructions at ev3dev.org](https://www.ev3dev.org/docs/tu
 ```bash
 sudo apt update && sudo apt install python3-ev3dev2 micropython-ev3dev2
 ```
+### Change EV3dev2 Hostname
+```bash
+sudo nano /etc/hostname
+```
+root pass: maker
+change the hostname on line 1
 
-## TODO
+<kbd>CTRL</kbd>+<kbd>O</kbd>
+
+<kbd> enter </kbd>
+
+<kbd>CTRL</kbd>+<kbd>X</kbd>
+
+```bash
+sudo nano /etc/hosts
+```
+change "localhost" on the first line to the same hostname
+
+<kbd>CTRL</kbd>+<kbd>O</kbd>
+
+<kbd> enter </kbd>
+
+<kbd>CTRL</kbd>+<kbd>X</kbd>
+## List of Hostnames
+First Griffy: Griffy_A
+
+Second_Griffy: Griffy_B
+
+Test Brick: Test_Brick
+### TODO
