@@ -47,6 +47,22 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
     "python.pythonPath": "~/.venvs/ev3dev2/bin/python3"
 ```
 
+(This step was already done and does not need to be completed every time)
+
+### Clone Repository
+
+* Before cloning the repo, ensure that an SSH key has been created and is in bitbucket.
+* Ensure full permisions are given by repo owner.
+
+1. Quit and reload VSCode.
+2. Open the terminal in VSCode
+3. Git Clone
+4. ```bash git@bitbucket.org:gearheadgriffins/griffy-dev2.git
+    ```
+* If this causes error run command in terminal and select yes
+5. Run Git Clone and git@bitbucket.org:gearheadgriffins/griffy-dev2.git
+6. Save cloned repo to computer (Not To Desktop!!!)
+
 ## Connect EV3 to VS Code and Internet
 
 Follow the [bluetooth instructions at ev3dev.org](https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/)
