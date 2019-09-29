@@ -5,6 +5,9 @@
     "[markdown]": {
         "editor.tabSize": 2
     },
+    "markdownlint.config": {
+        "no-inline-html": {"allowed_elements": ["kbd"]},
+    },
     "ev3devBrowser.download.include": "**/*.*py",
     "ev3devBrowser.download.exclude": "{samples,Non-Mission Code}"
 }
