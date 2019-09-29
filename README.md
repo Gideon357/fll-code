@@ -30,12 +30,19 @@ Roughly followed [vscode-hello-python](https://github.com/ev3dev/vscode-hello-py
 brew install python
 ```
 
+#### Tell your system to use the new python as default
+
+```bash
+# add to your .bash_profile
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+```
+
 ### Create a venv for ev3dev2 programming
 
 ```bash
 cd # change directory to your home dir
 mkdir .venvs # directory to store all virtual environments
-python -mvenv .venvs/ev3dev2 # create the empty environment
+python3 -mvenv .venvs/ev3dev2 # create the empty environment
 . .venvs/ev3dev2/bin/activate # turn on the environment
 pip install --upgrade pip # upgrade pip (python package installer) to latest version
 pip install python-ev3dev2 # install to OS X the ev3dev2 libraries for command completion
@@ -47,21 +54,18 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
     "python.pythonPath": "~/.venvs/ev3dev2/bin/python3"
 ```
 
-(This step was already done and does not need to be completed every time)
+(This step above was already done and does not need to be completed every time)
 
 ### Clone Repository
 
-* Before cloning the repo, ensure that an SSH key has been created and is in bitbucket.
+* Before cloning the repo, ensure that an [SSH key has been created](https://confluence.atlassian.com/bitbucket/set-up-an-ssh-key-728138079.html) and is in bitbucket.
 * Ensure full permisions are given by repo owner.
 
-1. Quit and reload VSCode.
-2. Open the terminal in VSCode
-3. Git Clone
-4. ```bash git@bitbucket.org:gearheadgriffins/griffy-dev2.git
-    ```
-* If this causes error run command in terminal and select yes
-5. Run Git Clone and git@bitbucket.org:gearheadgriffins/griffy-dev2.git
-6. Save cloned repo to computer (Not To Desktop!!!)
+1. Quit and reload VSCode
+2. Git clone via CMD-SHIFT-P and enter repo: git@bitbucket.org:gearheadgriffins/griffy-dev2.git
+3. Choose location in ~/Documents or wherever (not Desktop)
+4. If this causes error run the same command in terminal and select yes
+5. Open the Folder in VSCode
 
 ## Connect EV3 to VS Code and Internet
 
