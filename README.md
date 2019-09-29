@@ -92,7 +92,9 @@ root pass: maker
 change the hostname on line 1
 
 <kbd>CTRL</kbd>+<kbd>O</kbd>
+
 <kbd> enter </kbd>
+
 <kbd>CTRL</kbd>+<kbd>X</kbd>
 
 ```bash
@@ -102,7 +104,9 @@ sudo nano /etc/hosts
 change "localhost" on the first line to the same hostname
 
 <kbd>CTRL</kbd>+<kbd>O</kbd>
+
 <kbd> enter </kbd>
+
 <kbd>CTRL</kbd>+<kbd>X</kbd>
 
 ## List of Hostnames
