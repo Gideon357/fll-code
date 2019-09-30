@@ -52,17 +52,22 @@ class Griffy(MoveDifferential):
         player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
     def line_square(self, black_light_intensity, white_light_intensity):
+        """Needs a method description and usage."""
         pass
 
     def pid_line_follow(self, black_light_intensity, white_light_intensity, speed):
+        """Needs a method description and usage."""
         pass
 
     def dive_until_color(self, speed):
+        """Needs a method description and usage."""
         pass
 
     def gyro_turn(self, degrees, speed):
+        """Needs a method description and usage."""
         pass
 
     def first_run(self):
+        """Needs a method description and usage."""
         self.on_for_distance(30, 520)
         self.on_for_distance(-100, 520)
