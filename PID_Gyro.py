@@ -1,8 +1,14 @@
 from ev3dev2.sensor.lego import GyroSensor
+from ev3dev2.motor import Motor, LargeMotor, MoveTank
 gyro = GyroSensor()
+motor = Motor()
 gyro.mode = GYRO-ANG
 
 def gyroPID(ki,kp,kd,target,wheel,speed,distance)
+    subprocesses.call("echo reset > $MC/command")
+    counts = motor.count_per_rot
+    r = distance/wheel
+    m = r*counts
     while True:
         error = target - gyro.mode
         integral = integral + error
@@ -11,9 +17,9 @@ def gyroPID(ki,kp,kd,target,wheel,speed,distance)
         porportionResult = kp*error
         derivResult = kd*derivative
         result = integralResult+derivResult+porportionResult
-        tank_drive = MoveTank(OUTPUT_A, OUTPUT_B)
-        r = wheel/distance
         tank.on(result)
         error = lastError
-""" TODO: Incorprate move block into correction to allow this to run while moving forward.
-Add to Griffy Class."""
+        if motor.position => m:
+            return False
+        else:
+            return True
