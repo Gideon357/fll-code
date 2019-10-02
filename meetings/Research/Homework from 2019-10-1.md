@@ -17,8 +17,8 @@ Respond Here
 
 <table border="0">
  <tr>
-    <td><b style="font-size:30px">Problem</b></td>
-    <td><b style="font-size:30px">Solution</b></td>
+    <td><b style="font-size:20px">Problem</b></td>
+    <td><b style="font-size:20px">Solution</b></td>
  </tr>
  <tr>
     <td>
