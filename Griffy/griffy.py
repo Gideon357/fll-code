@@ -21,6 +21,7 @@ RIGHT_COLOR_SENSOR_INPUT = INPUT_3
 RIGHT_GYRO_SENSOR_INPUT = INPUT_4
 WHITE_LIGHT_INTENSITY = 46
 BLACK_LIGHT_INTENSITY = 8
+INCHES_TO_MILIMETERS = 25.4
 
 
 class Griffy(MoveDifferential):
@@ -47,9 +48,9 @@ class Griffy(MoveDifferential):
         self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
         self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
         self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
-        self.WHEEL_DISTANCE = WheelDistance
-        self.LEFT_LARGE_MOTOR = LeftLargeMotor
-        self.RIGHT_LARGE_MOTOR = RightLargeMotor
+        # self.WHEEL_DISTANCE = WheelDistance
+        # self.LEFT_LARGE_MOTOR = LeftLargeMotor
+        # self.RIGHT_LARGE_MOTOR = RightLargeMotor
         # Put a sound at the end to show when it is done.
         self.start_tone()
 
@@ -59,6 +60,9 @@ class Griffy(MoveDifferential):
 
     def sleep_in_loop(self, sleep_time=0.01):
         sleep(sleep_time)
+
+    def in_to_mm(self, inches):
+        return inches * 25.4
 
     def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
         """
@@ -141,45 +145,49 @@ class Griffy(MoveDifferential):
     def gyro_turn(self, degrees, speed):
         pass
 
-    def pid_line_follow(self, black_light_intensity, white_light_intensity, speed):
-        """Needs a method description and usage."""
-        pass
-
-    def move(ki=0,kp=0,kd=0,target=0,wheel=self.WheelDistance,LeftSpeed=100,RightSpeed=100,distance, drive_with_gyro=True)
-        """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
-        r = distance/wheel
-        console = Console()
-        if drive_with_gyro == True:
-            try:
-                subprocesses.call("echo reset > $MC/command")  # Resets Tacho Counts, I use these to count the robots movment so that it can correct using the PID algorithim and move simultaneously.
-                counts = motor.count_per_rot # Finds Tacho Counts per rotation.
-                m = r*counts
-                steer = MoveSteering(self.LeftLargeMotor, self.RightLargeMotor) # Initializes MoveSteering 
-                while True:
-                    error = target - gyro.mode
-                    integral = integral + error
-                    error - last_error = derivative
-                    integralResult = integral*ki
-                    porportionResult = kp*error
-                    derivResult = kd*derivative
-                    result = integralResult+derivResult+porportionResult
-                    steer.on(result,speed)
-                    error = lastError
-                    if motor.position => m:
-                        return False #If the motor has moved the correct amount, it ends the loop
-                    else:
-                        subprocesses.call("echo reset > $MC/command")
-                        return True
-            except: # If tacho motor does not initialize, it runs without gyro
-                tank.on_for_rotations(LeftSpeed,RightSpeed,r)
-                try:
-                    console.text_at('An Exception Occured, Ran Without Gyro. Check Motor and Drivers', column=1, row=5, reset_console=True, inverse=True)
-                except:
-                    pass
-            else:
-                tank.on_for_rotations(LeftSpeed,RightSpeed,r)
+    # def move(ki=0,kp=0,kd=0,target=0,wheel=self.WheelDistance,LeftSpeed=100,RightSpeed=100,distance, drive_with_gyro=True):
+    #     """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
+    #     r = distance/wheel
+    #     console = Console()
+    #     if drive_with_gyro == True:
+    #         try:
+    #             subprocesses.call("echo reset > $MC/command")  # Resets Tacho Counts, I use these to count the robots movment so that it can correct using the PID algorithim and move simultaneously.
+    #             counts = motor.count_per_rot # Finds Tacho Counts per rotation.
+    #             m = r*counts
+    #             steer = MoveSteering(self.LeftLargeMotor, self.RightLargeMotor) # Initializes MoveSteering 
+    #             while True:
+    #                 error = target - gyro.mode
+    #                 integral = integral + error
+    #                 error - last_error = derivative
+    #                 integralResult = integral*ki
+    #                 porportionResult = kp*error
+    #                 derivResult = kd*derivative
+    #                 result = integralResult+derivResult+porportionResult
+    #                 steer.on(result,speed)
+    #                 error = lastError
+    #                 if motor.position => m:
+    #                     return False #If the motor has moved the correct amount, it ends the loop
+    #                 else:
+    #                     subprocesses.call("echo reset > $MC/command")
+    #                     return True
+    #         except: # If tacho motor does not initialize, it runs without gyro
+    #             tank.on_for_rotations(LeftSpeed,RightSpeed,r)
+    #             try:
+    #                 console.text_at('An Exception Occured, Ran Without Gyro. Check Motor and Drivers', column=1, row=5, reset_console=True, inverse=True)
+    #             except:
+    #                 pass
+    #         else:
+    #             tank.on_for_rotations(LeftSpeed,RightSpeed,r)
 
     def first_run(self):
         """A Test Run"""
-        self.on_for_distance(30, 520)
-        self.on_for_distance(-100, 520)
+        self.on_for_distance(35, 390)
+        self.on_for_distance(-75, 125)
+        self.off
+        self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
+        self.off
+        sleep(8)
+        # make this an arc so we dont have to aim it
+        self.on_for_distance(60, self.in_to_mm(37.5))
+        self.off
+        self.on_for_distance(60, self.in_to_mm(-8))
