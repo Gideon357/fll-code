@@ -57,7 +57,6 @@ class Griffy(MoveDifferential):
         player = Sound()
         player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
-<<<<<<< HEAD
     def sleep_in_loop(self, sleep_time=0.01):
         sleep(sleep_time)
 
@@ -141,53 +140,44 @@ class Griffy(MoveDifferential):
     
     def gyro_turn(self, degrees, speed):
         pass
-=======
-    def line_square(self, black_light_intensity, white_light_intensity):
-        """Needs a method description and usage."""
-        pass
 
     def pid_line_follow(self, black_light_intensity, white_light_intensity, speed):
         """Needs a method description and usage."""
         pass
 
-    def dive_until_color(self, speed):
-        """Needs a method description and usage."""
-        pass
-
-  def move(ki=0,kp=0,kd=0,target=0,wheel=self.WheelDistance,LeftSpeed=100,RightSpeed=100,distance, drive_with_gyro=True)
-     """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
-    r = distance/wheel
-    console = Console()
-    if drive_with_gyro == True:
-        try:
-            subprocesses.call("echo reset > $MC/command")  # Resets Tacho Counts, I use these to count the robots movment so that it can correct using the PID algorithim and move simultaneously.
-            counts = motor.count_per_rot # Finds Tacho Counts per rotation.
-            m = r*counts
-            steer = MoveSteering(self.LeftLargeMotor, self.RightLargeMotor) # Initializes MoveSteering 
-            while True:
-                error = target - gyro.mode
-                integral = integral + error
-                error - last_error = derivative
-                integralResult = integral*ki
-                porportionResult = kp*error
-                derivResult = kd*derivative
-                result = integralResult+derivResult+porportionResult
-                steer.on(result,speed)
-                error = lastError
-                if motor.position => m:
-                    return False #If the motor has moved the correct amount, it ends the loop
-                else:
-                    subprocesses.call("echo reset > $MC/command")
-                    return True
-        except: # If tacho motor does not initialize, it runs without gyro
-            tank.on_for_rotations(LeftSpeed,RightSpeed,r)
+    def move(ki=0,kp=0,kd=0,target=0,wheel=self.WheelDistance,LeftSpeed=100,RightSpeed=100,distance, drive_with_gyro=True)
+        """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
+        r = distance/wheel
+        console = Console()
+        if drive_with_gyro == True:
             try:
-                console.text_at('An Exception Occured, Ran Without Gyro. Check Motor and Drivers', column=1, row=5, reset_console=True, inverse=True)
-            except:
-                pass
-        else:
-            tank.on_for_rotations(LeftSpeed,RightSpeed,r)
->>>>>>> f7dcc01944802314c4f9d3410d088c3466ba7238
+                subprocesses.call("echo reset > $MC/command")  # Resets Tacho Counts, I use these to count the robots movment so that it can correct using the PID algorithim and move simultaneously.
+                counts = motor.count_per_rot # Finds Tacho Counts per rotation.
+                m = r*counts
+                steer = MoveSteering(self.LeftLargeMotor, self.RightLargeMotor) # Initializes MoveSteering 
+                while True:
+                    error = target - gyro.mode
+                    integral = integral + error
+                    error - last_error = derivative
+                    integralResult = integral*ki
+                    porportionResult = kp*error
+                    derivResult = kd*derivative
+                    result = integralResult+derivResult+porportionResult
+                    steer.on(result,speed)
+                    error = lastError
+                    if motor.position => m:
+                        return False #If the motor has moved the correct amount, it ends the loop
+                    else:
+                        subprocesses.call("echo reset > $MC/command")
+                        return True
+            except: # If tacho motor does not initialize, it runs without gyro
+                tank.on_for_rotations(LeftSpeed,RightSpeed,r)
+                try:
+                    console.text_at('An Exception Occured, Ran Without Gyro. Check Motor and Drivers', column=1, row=5, reset_console=True, inverse=True)
+                except:
+                    pass
+            else:
+                tank.on_for_rotations(LeftSpeed,RightSpeed,r)
 
     def first_run(self):
         """A Test Run"""
