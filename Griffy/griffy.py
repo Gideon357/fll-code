@@ -18,6 +18,8 @@ LEFT_GYRO_SENSOR_INPUT = INPUT_1
 LEFT_COLOR_SENSOR_INPUT = INPUT_2
 RIGHT_COLOR_SENSOR_INPUT = INPUT_3
 RIGHT_GYRO_SENSOR_INPUT = INPUT_4
+WHITE_LIGHT_INTENSITY = 46
+BLACK_LIGHT_INTENSITY = 8
 
 
 class Griffy(MoveDifferential):
@@ -51,15 +53,87 @@ class Griffy(MoveDifferential):
         player = Sound()
         player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
-    def line_square(self, black_light_intensity, white_light_intensity):
+    def sleep_in_loop(self, sleep_time=0.01):
+        sleep(sleep_time)
+
+    def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
+        """
+        Squares the robot to the line using the 
+        selected speed 'speed' and the constant intensities
+        """
+        self.left_color_sensor.MODE_COL_REFLECT
+        self.right_color_sensor.MODE_COL_REFLECT
+        while self.right_color_sensor.reflected_light_intensity <= white_light_intensity:
+            self.on(SpeedPercent(0), SpeedPercent(speed))
+            self.sleep_in_loop
+        self.off()
+        while self.right_color_sensor.reflected_light_intensity >= black_light_intensity:
+            self.on(SpeedPercent(0), SpeedPercent(speed))
+            self.sleep_in_loop
+        self.off()
+        while self.right_color_sensor.reflected_light_intensity <= white_light_intensity:
+            self.on(SpeedPercent(0), SpeedPercent(-speed))
+            self.sleep_in_loop
+        self.off()
+        while self.right_color_sensor.reflected_light_intensity >= black_light_intensity:
+            self.on(SpeedPercent(0), SpeedPercent(speed))
+            self.sleep_in_loop
+        self.off()
+        while self.left_color_sensor.reflected_light_intensity <= white_light_intensity:
+            self.on(SpeedPercent(-speed), SpeedPercent(0))
+            self.sleep_in_loop
+        self.off()
+        while self.left_color_sensor.reflected_light_intensity >= black_light_intensity:
+            self.on(SpeedPercent(speed), SpeedPercent(0))
+            self.sleep_in_loop
+        self.off()
+        while self.left_color_sensor.reflected_light_intensity <= white_light_intensity:
+            self.on(SpeedPercent(-speed), SpeedPercent(0))
+            self.sleep_in_loop
+        self.off()
+        while self.left_color_sensor.reflected_light_intensity >= black_light_intensity:
+            self.on(SpeedPercent(speed), SpeedPercent(0))
+            self.sleep_in_loop
+        self.off()
+        
+    def pid_line_follow(self, speed, black_light_intensity, white_light_intensity):
         pass
 
-    def pid_line_follow(self, black_light_intensity, white_light_intensity, speed):
-        pass
+    def drive_until_color(self, speed, color, which_color_sensor='right'):
+        """
+        drives at `SpeedPercent(speed)` until the specified color `stop_color`
+        with chosen color sensor `which_color_sensor`
+        TODO: add gyro support
+        """
+        if which_color_sensor == 'right':
+            cs = self.right_color_sensor
+        else:
+            cs = self.left_color_sensor
+        cs.MODE_COL_COLOR = 'COL-COLOR'
+        self.on(SpeedPercent(speed), SpeedPercent(speed))
+        while not color == cs.color_name:
+            self.sleep_in_loop()
+        self.off()
 
-    def dive_until_color(self, speed):
-        pass
-
+    def drive_until_white_black(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY, which_color_sensor='left'):
+        """
+        drives at `SpeedPercent(speed)` until white `white_light_intensity`
+        then black 'black_light_intensity' 
+        with chosen color sensor `which_color_sensor`
+        TODO: add gyro support
+        """
+        if which_color_sensor == 'right':
+            cs = self.right_color_sensor
+        else:
+            cs = self.left_color_sensor
+        cs.MODE_COL_REFLECT = 'COL-REFLECT'
+        self.on(SpeedPercent(speed), SpeedPercent(speed))
+        while cs.reflected_light_intensity <= white_light_intensity:
+            self.sleep_in_loop()
+        while cs.reflected_light_intensity >= black_light_intensity:
+            self.sleep_in_loop()
+        self.off()
+    
     def gyro_turn(self, degrees, speed):
         pass
 
