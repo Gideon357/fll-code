@@ -4,7 +4,7 @@ from ev3dev2.console import Console
 from ev3dev2.button import Button 
 from collections import deque
 currentProgram = 0
-btn() = Button
+btn = Button()
 
 def bar():
     print("it works")
@@ -16,7 +16,7 @@ objects = [{"name":"foo","function":foo(), number:'1'}, {"name":"bar", "function
 
 newObjects = numpy.asarray(objects)
 
-for i in range(len(objects)):
+for i in range(0, len(objects)):
     print(objects[i]["name"])
 
 def btn.on_up(state):
@@ -49,7 +49,6 @@ def commandLoop():
     btn.on_down()
     btn.on_enter()
     btn.on_up()
-
 
 while True:
     commandLoop()
