@@ -1,4 +1,4 @@
-from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, Motor, MoveSteering
+from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, SpeedValue
 from ev3dev2.wheel import EV3Tire
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
@@ -48,9 +48,9 @@ class Griffy(MoveDifferential):
         self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
         self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
         self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
-        # self.WHEEL_DISTANCE = WheelDistance
-        # self.LEFT_LARGE_MOTOR = LeftLargeMotor
-        # self.RIGHT_LARGE_MOTOR = RightLargeMotor
+        self.left_large_motor = LargeMotor(LEFT_LARGE_MOTOR_PORT)
+        self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
+        self.wheel_circumference = 17.9 # Need to add constant value
         # Put a sound at the end to show when it is done.
         self.start_tone()
 
@@ -145,30 +145,49 @@ class Griffy(MoveDifferential):
     def gyro_turn(self, degrees, speed):
         pass
 
-    # def move(ki=0,kp=0,kd=0,target=0,wheel=self.WheelDistance,LeftSpeed=100,RightSpeed=100,distance, drive_with_gyro=True):
+    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.1, ki=0.1, kd=0.1, target=0):
+        """
+        Drives for a certain distance
+        and has a toglable gyro feature
+        TODO: Define Parameters so people know what they are for
+        TODO: Explain gyro algorithm
+        """
+        distance_mm = self.in_to_mm(distance_in)
+        if use_gyro:
+            gyro = self.left_gyro_sensor
+            gyro.reset()
+            integral = 0.0
+            last_error = 0.0
+            derivative = 0.0
+            # rotations = distance_mm / self.wheel_circumference
+            # degrees = 360 * rotations
+            self.reset(self.right_large_motor)
+            self.reset(self.left_large_motor)
+            speed_native_units = speed.to_native_units(self.left_large_motor)
+            while True:
+                error = target - gyro.angle
+                integral = integral + error
+                derivative = error - last_error
+                last_error = error
+                turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
+                left_speed = speed_native_units(SpeedNativeUnits - turn_native_units)
+                right_speed = speed_native_units(SpeedNativeUnits + turn_native_units)
+                self.sleep_in_loop()
+                self.on(left_speed, right_speed)
+        else:
+            super().on_for_distance(speed, distance_mm, brake, block)
+
+    # def move(ki=0, kp=0, kd=0, target=0, drive_with_gyro=True):
     #     """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
-    #     r = distance/wheel
-    #     console = Console()
     #     if drive_with_gyro == True:
-    #         try:
-    #             subprocesses.call("echo reset > $MC/command")  # Resets Tacho Counts, I use these to count the robots movment so that it can correct using the PID algorithim and move simultaneously.
-    #             counts = motor.count_per_rot # Finds Tacho Counts per rotation.
-    #             m = r*counts
-    #             steer = MoveSteering(self.LeftLargeMotor, self.RightLargeMotor) # Initializes MoveSteering 
-    #             while True:
     #                 error = target - gyro.mode
     #                 integral = integral + error
-    #                 error - last_error = derivative
-    #                 integralResult = integral*ki
-    #                 porportionResult = kp*error
-    #                 derivResult = kd*derivative
-    #                 result = integralResult+derivResult+porportionResult
-    #                 steer.on(result,speed)
-    #                 error = lastError
+    #                 derivative = error - last_error
+    #                 last error = error
+    #                 turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
     #                 if motor.position => m:
     #                     return False #If the motor has moved the correct amount, it ends the loop
     #                 else:
-    #                     subprocesses.call("echo reset > $MC/command")
     #                     return True
     #         except: # If tacho motor does not initialize, it runs without gyro
     #             tank.on_for_rotations(LeftSpeed,RightSpeed,r)
