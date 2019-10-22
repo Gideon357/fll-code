@@ -1,11 +1,14 @@
-from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, SpeedValue
+from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor
 from ev3dev2.wheel import EV3Tire
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
 from .button import Button
 from ev3dev2.console import Console
+from ev3dev2.display import Display
+from sys import stderr
 from time import sleep
+
 
 # Config setting for Griffy
 LEFT_MEDIUM_MOTOR_PORT = OUTPUT_A
@@ -14,6 +17,7 @@ RIGHT_LARGE_MOTOR_PORT = OUTPUT_C
 RIGHT_MEDIUM_MOTOR_PORT = OUTPUT_D
 STUD_MM = 7
 WHEEL_CLASS = EV3Tire
+WHEEL_CIRCUMFERENCE = 17.9
 WHEEL_DISTANCE = STUD_MM * 11 # Center of wheels are 11 studs apart
 LEFT_GYRO_SENSOR_INPUT = INPUT_1
 LEFT_COLOR_SENSOR_INPUT = INPUT_2
@@ -34,7 +38,7 @@ class Griffy(MoveDifferential):
     Maybe Missions
     """
 
-    def __init__(self):
+    def __init__(self, debug_on=True):
         """
         Initalize a griffy class which is based
         on move differential. Also set up the medium motors
@@ -50,15 +54,21 @@ class Griffy(MoveDifferential):
         self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
         self.left_large_motor = LargeMotor(LEFT_LARGE_MOTOR_PORT)
         self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
-        self.wheel_circumference = 17.9 # Need to add constant value
-        # Put a sound at the end to show when it is done.
-        self.start_tone()
+        self.wheel_circumference = WHEEL_CIRCUMFERENCE
+        self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
+        self.debug_on = debug_on
+        self.start_tone() # A sound at the end to show when it is done.
+
+    def debug(self, str):
+        """Print to stderr the debug message ``str`` if self.debug is True."""
+        if self.debug_on:
+            print(str, file=stderr)
 
     def start_tone(self):
         player = Sound()
         player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
-    def sleep_in_loop(self, sleep_time=0.01):
+    def sleep_in_loop(self, sleep_time=0.1):
         sleep(sleep_time)
 
     def in_to_mm(self, inches):
@@ -69,42 +79,7 @@ class Griffy(MoveDifferential):
         Squares the robot to the line using the 
         selected speed 'speed' and the constant intensities
         """
-        self.left_color_sensor.MODE_COL_REFLECT
-        self.right_color_sensor.MODE_COL_REFLECT
-        while self.right_color_sensor.reflected_light_intensity <= white_light_intensity:
-            self.on(SpeedPercent(0), SpeedPercent(speed))
-            self.sleep_in_loop
-        self.off()
-        while self.right_color_sensor.reflected_light_intensity >= black_light_intensity:
-            self.on(SpeedPercent(0), SpeedPercent(speed))
-            self.sleep_in_loop
-        self.off()
-        while self.right_color_sensor.reflected_light_intensity <= white_light_intensity:
-            self.on(SpeedPercent(0), SpeedPercent(-speed))
-            self.sleep_in_loop
-        self.off()
-        while self.right_color_sensor.reflected_light_intensity >= black_light_intensity:
-            self.on(SpeedPercent(0), SpeedPercent(speed))
-            self.sleep_in_loop
-        self.off()
-        while self.left_color_sensor.reflected_light_intensity <= white_light_intensity:
-            self.on(SpeedPercent(-speed), SpeedPercent(0))
-            self.sleep_in_loop
-        self.off()
-        while self.left_color_sensor.reflected_light_intensity >= black_light_intensity:
-            self.on(SpeedPercent(speed), SpeedPercent(0))
-            self.sleep_in_loop
-        self.off()
-        while self.left_color_sensor.reflected_light_intensity <= white_light_intensity:
-            self.on(SpeedPercent(-speed), SpeedPercent(0))
-            self.sleep_in_loop
-        self.off()
-        while self.left_color_sensor.reflected_light_intensity >= black_light_intensity:
-            self.on(SpeedPercent(speed), SpeedPercent(0))
-            self.sleep_in_loop
-        self.off()
-        
-    def pid_line_follow(self, speed, black_light_intensity, white_light_intensity):
+        # Need to think o a way to involve all cases
         pass
 
     def drive_until_color(self, speed, color, which_color_sensor='right'):
@@ -142,71 +117,72 @@ class Griffy(MoveDifferential):
             self.sleep_in_loop()
         self.off()
     
-    def gyro_turn(self, degrees, speed):
-        pass
+    def attachment_raise_lower(self, speed, rotations):
+        """
+        Raises and lowers the medium motors as a tank
+        """
+        self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.1, ki=0.1, kd=0.1, target=0):
+    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.6, ki=1, kd=0.8, target=0):
         """
         Drives for a certain distance
         and has a toglable gyro feature
+        HIGHLY SUGGESTED TO NOT CHANGE K VALUES
         TODO: Define Parameters so people know what they are for
         TODO: Explain gyro algorithm
+        TODO: Add comments throughout
+
+        ``speed`` can be a percentage or a :class:`ev3dev2.motor.SpeedValue`
+        object, enabling use of other units.
         """
+        # self.reset()
         distance_mm = self.in_to_mm(distance_in)
         if use_gyro:
-            gyro = self.left_gyro_sensor
-            gyro.reset()
-            integral = 0.0
-            last_error = 0.0
-            derivative = 0.0
+            gyro = self.right_gyro_sensor
+            gyro.mode = gyro.MODE_GYRO_ANG
+            # there is currently a bug in gyro.reset() method so instead we just read the current
+            # angle and then compare to that
+            # gyro.reset()
+            reset_angle = gyro.angle
+            self.debug("GYRO ANGLE BEFORE LOOP: {}".format(gyro.angle))
+            
+            # convert speed to a SpeedValue if not already
+            speed_native_units = self.left_motor._speed_native_units(speed)
+            integral = 0.0 # integral is the sum of all errors
+            last_error = 0.0 # last_error stores the last error through the while loop
+            derivative = 0.0  # derivative is the rate at which the error is changing
             # rotations = distance_mm / self.wheel_circumference
             # degrees = 360 * rotations
-            self.reset(self.right_large_motor)
-            self.reset(self.left_large_motor)
-            speed_native_units = speed.to_native_units(self.left_large_motor)
+            # self.left_large_motor.reset()
+            # self.right_large_motor.reset()        
             while True:
-                error = target - gyro.angle
+                #error = target - gyro.angle - reset_angle
+                error = gyro.angle - reset_angle
                 integral = integral + error
                 derivative = error - last_error
                 last_error = error
                 turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
-                left_speed = speed_native_units(SpeedNativeUnits - turn_native_units)
-                right_speed = speed_native_units(SpeedNativeUnits + turn_native_units)
-                self.sleep_in_loop()
+                left_speed = SpeedNativeUnits(speed_native_units - turn_native_units)
+                right_speed = SpeedNativeUnits(speed_native_units + turn_native_units)
+                self.debug("error: {}, integral: {}, derivative: {}, last_error: {}, turn_native_units: {}, left_speed: {}, right_speed: {}".format(error, integral, derivative, last_error, turn_native_units, left_speed, right_speed))
                 self.on(left_speed, right_speed)
+                self.sleep_in_loop(0.01)
         else:
             super().on_for_distance(speed, distance_mm, brake, block)
 
-    # def move(ki=0, kp=0, kd=0, target=0, drive_with_gyro=True):
-    #     """ Moves the robot a specified amount of inches. Uses PID algorithim and the Gyro Sensor to correct drift"""
-    #     if drive_with_gyro == True:
-    #                 error = target - gyro.mode
-    #                 integral = integral + error
-    #                 derivative = error - last_error
-    #                 last error = error
-    #                 turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
-    #                 if motor.position => m:
-    #                     return False #If the motor has moved the correct amount, it ends the loop
-    #                 else:
-    #                     return True
-    #         except: # If tacho motor does not initialize, it runs without gyro
-    #             tank.on_for_rotations(LeftSpeed,RightSpeed,r)
-    #             try:
-    #                 console.text_at('An Exception Occured, Ran Without Gyro. Check Motor and Drivers', column=1, row=5, reset_console=True, inverse=True)
-    #             except:
-    #                 pass
-    #         else:
-    #             tank.on_for_rotations(LeftSpeed,RightSpeed,r)
-
     def first_run(self):
-        """A Test Run"""
-        self.on_for_distance(35, 390)
-        self.on_for_distance(-75, 125)
-        self.off
+        """First robot run"""
+        self.on_for_distance(SpeedPercent(30), 390)
+        self.on_for_distance(SpeedPercent(-75), 125)
         self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
-        self.off
         sleep(8)
         # make this an arc so we dont have to aim it
-        self.on_for_distance(60, self.in_to_mm(37.5))
-        self.off
-        self.on_for_distance(60, self.in_to_mm(-8))
+        self.on_for_distance(SpeedPercent(60), self.in_to_mm(37.5))
+        self.on_for_distance(SpeedPercent(60), self.in_to_mm(-8))
+
+    def second_run(self):
+        """Second robot run"""
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5))
+        self.attachment_raise_lower(10, 1)
+        self.on_for_distance(SpeedPercent(30), 3)
+        self.on_for_distance(SpeedPercent(-75), 21)
