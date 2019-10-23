@@ -2,9 +2,11 @@
 
 ## Quick Links to Docs
 
+* [Udemy EV3](https://www.udemy.com/course/ev3-python/learn/lecture/15000204#overview) User: alex@schmelkin.com / Pass: oYjt84H,UVAZg
 * [ev3dev2 Homepage](https://sites.google.com/site/ev3devpython/learn_ev3_python)
 * [ev3dev2 documentation](https://python-ev3dev.readthedocs.io/en/ev3dev-stretch/)
 * [EV3Dev Device Browser](https://github.com/ev3dev/vscode-ev3dev-browser/wiki/Settings)
+* [Object Oriented Python](https://youtu.be/ZDa-Z5JzLYM)
 
 ## Setting up VS Code + Python
 
