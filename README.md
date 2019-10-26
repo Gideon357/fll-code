@@ -35,8 +35,9 @@ brew install python
 #### Tell your system to use the new python as default
 
 ```bash
-# add to your .bash_profile
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+# insert as first line of .bash_profile the export PATH setting
+# created .bash_profile if it doesn't exist
+ex -sc '1i|export PATH="/usr/local/opt/python/libexec/bin:$PATH"' -cx .bash_profile
 ```
 
 ### Create a venv for ev3dev2 programming
@@ -50,13 +51,12 @@ pip install --upgrade pip # upgrade pip (python package installer) to latest ver
 pip install python-ev3dev2 # install to OS X the ev3dev2 libraries for command completion
 ```
 
-In order to tell VS Code to use this venv when you're developing for ev3dev2, we store the location of the python interpreter in .vscode/settings.json (already saved in git):
+NOTE: the below step was already completed in the `.vscode/settings.json` file in the git repo
+In order to tell VS Code to use this venv when you're developing for ev3dev2, we store the location of the python interpreter in `.vscode/settings.json`:
 
 ```json
     "python.pythonPath": "~/.venvs/ev3dev2/bin/python3"
 ```
-
-(This step above was already done and does not need to be completed every time)
 
 ### Clone Repository
 
@@ -64,16 +64,18 @@ In order to tell VS Code to use this venv when you're developing for ev3dev2, we
 * Ensure full permisions are given by repo owner.
 
 1. Quit and reload VSCode
-2. Git clone via CMD-SHIFT-P and enter repo: git@bitbucket.org:gearheadgriffins/griffy-dev2.git
+2. Git clone via CMD-SHIFT-P and enter repo: `git@bitbucket.org:gearheadgriffins/griffy-dev2.git`
 3. Choose location in ~/Documents or wherever (not Desktop)
-4. If this causes error run the same command in terminal and select yes
+4. If this causes error run the same command in terminal and select yes to accept new host identifier
 5. Open the Folder in VSCode
+
+### That's it!! Congratulations, you're done
 
 ## Connect EV3 to VS Code and Internet
 
 Follow the [bluetooth instructions at ev3dev.org](https://www.ev3dev.org/docs/tutorials/connecting-to-the-internet-via-bluetooth/)
 
-## Update ev3dev Libraries
+## When we need to update ev3dev Libraries without reflashing for new version
 
 1. right click on ev3dev in EV3DEV DEVICE BROWSER
 2. select SSH
