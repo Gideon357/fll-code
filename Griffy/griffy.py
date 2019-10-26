@@ -1,11 +1,12 @@
+from ev3dev2.console import Console
 from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor
-from ev3dev2.wheel import EV3Tire
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
-from .button import Button
+from ev3dev2.wheel import EV3Tire
 from sys import stderr
 from time import sleep
+from .button import Button
 
 
 # Config setting for Griffy
@@ -24,6 +25,7 @@ RIGHT_GYRO_SENSOR_INPUT = INPUT_4
 WHITE_LIGHT_INTENSITY = 46
 BLACK_LIGHT_INTENSITY = 8
 INCHES_TO_MILIMETERS = 25.4
+LIGHTFILE = "/home/robot/light.txt"
 
 
 class Griffy(MoveDifferential):
@@ -77,8 +79,43 @@ class Griffy(MoveDifferential):
         Squares the robot to the line using the 
         selected speed 'speed' and the constant intensities
         """
-        # Need to think o a way to involve all cases
+        # Need to think of a way to involve all cases
         pass
+
+    def choose_color_sensor(self, which_color_sensor='right'):
+        """
+        Returns the color sensor based on argument
+        """
+        if which_color_sensor == 'right':
+            return self.right_color_sensor
+        else:
+            return self.left_color_sensor
+
+    def read_from_color_sensor(self, which_color_sensor='right', read_white=True):
+        """
+        Will show the value of the color sensor on the screen
+        and return when any button is pressed
+        """
+        cs = self.choose_color_sensor(which_color_sensor)
+        cs.MODE_COL_REFLECT = 'COL-REFLECT'
+        console = Console()
+        btn = Button()
+        light = cs.reflected_light_intensity
+        while not btn.any():
+            console.text_at(str(light), column=8, row=14, reset_console=True, inverse=(not read_white), alignment="C")
+            light = cs.reflected_light_intensity
+            self.sleep_in_loop()
+        return light
+
+    def write_light_to_file(self, filename=LIGHTFILE):
+        """
+        Writes white and black light values to file system
+        """
+        self.debug(filename)
+        white = self.read_from_color_sensor(read_white=True)
+        black = self.read_from_color_sensor(read_white=False)
+        with open(filename, 'w') as f:
+            print("{} {}".format(white, black), file=f)
 
     def drive_until_color(self, speed, color, which_color_sensor='right'):
         """
@@ -86,10 +123,7 @@ class Griffy(MoveDifferential):
         with chosen color sensor `which_color_sensor`
         TODO: add gyro support
         """
-        if which_color_sensor == 'right':
-            cs = self.right_color_sensor
-        else:
-            cs = self.left_color_sensor
+        cs = self.choose_color_sensor(which_color_sensor)
         cs.MODE_COL_COLOR = 'COL-COLOR'
         self.on(SpeedPercent(speed), SpeedPercent(speed))
         while not color == cs.color_name:
@@ -103,10 +137,7 @@ class Griffy(MoveDifferential):
         with chosen color sensor `which_color_sensor`
         TODO: add gyro support
         """
-        if which_color_sensor == 'right':
-            cs = self.right_color_sensor
-        else:
-            cs = self.left_color_sensor
+        cs = self.choose_color_sensor(which_color_sensor)
         cs.MODE_COL_REFLECT = 'COL-REFLECT'
         self.on(SpeedPercent(speed), SpeedPercent(speed))
         while cs.reflected_light_intensity <= white_light_intensity:
@@ -170,34 +201,38 @@ class Griffy(MoveDifferential):
 
     def first_run(self):
         """First robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(390), use_gyro=False)
-        self.on_for_distance(SpeedPercent(-75), self.in_to_mm(125), use_gyro=False)
+        self.on_for_distance(SpeedPercent(30), 390, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-75), 125, use_gyro=False)
         self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
         sleep(8)
         # make this an arc so we dont have to aim it
-        self.on_for_distance(SpeedPercent(60), self.in_to_mm(37.5), use_gyro=False)
-        self.on_for_distance(SpeedPercent(60), self.in_to_mm(-8), use_gyro=False)
+        self.on_for_distance(SpeedPercent(60), 37.5, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-60), 8, use_gyro=False)
 
     def second_run(self):
         """Second robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
+        self.on_for_distance(SpeedPercent(30), 24.5, use_gyro=False)
         self.attachment_raise_lower(10, 1)
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(3), use_gyro=False)
-        self.on_for_distance(SpeedPercent(-75), self.in_to_mm(21), use_gyro=False)
+        self.on_for_distance(SpeedPercent(30), 3, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-75), 21, use_gyro=False)
 
     def third_run(self):
         """Third robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
-        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
+        self.on_for_distance(SpeedPercent(30), 24.5, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-30), 10, use_gyro=False)
 
     def fourth_run(self):
         """Fourth robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
-        sleep(1)
-        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
-
-    def fifth_run(self):
-        """Fifth robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
-        self.on_arc_left(SpeedPercent(40), self.in_to_mm(1), self.in_to_mm(15))
-        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
+        # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
+        self.on_for_distance(SpeedPercent(30), 1, use_gyro=False)
+        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.86))
+        self.on_for_distance(SpeedPercent(50), 42.65, use_gyro=False)
+        self.on_arc_right(SpeedPercent(50), self.in_to_mm(1.8), self.in_to_mm(1.2))
+        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(.75))
+        self.on_for_distance(SpeedPercent(-30), 1, use_gyro=False)
+        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2))
+        self.on_for_distance(SpeedPercent(-30), 8, use_gyro=False)
+        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.5))
+        self.on_for_distance(SpeedPercent(30), 8, use_gyro=False)
+        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(3))
+        self.on_for_distance(SpeedPercent(-30), 8, use_gyro=False)
