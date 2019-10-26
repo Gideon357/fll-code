@@ -4,8 +4,6 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
 from .button import Button
-from ev3dev2.console import Console
-from ev3dev2.display import Display
 from sys import stderr
 from time import sleep
 
@@ -35,7 +33,7 @@ class Griffy(MoveDifferential):
     Move with Gyro
     Recreated PID Line Follower
     Drive until color
-    Maybe Missions
+    Missions
     """
 
     def __init__(self, debug_on=True):
@@ -123,7 +121,7 @@ class Griffy(MoveDifferential):
         """
         self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.6, ki=1, kd=0.8, target=0):
+    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.6, ki=0.5, kd=0.6, target=0):
         """
         Drives for a certain distance
         and has a toglable gyro feature
@@ -172,17 +170,34 @@ class Griffy(MoveDifferential):
 
     def first_run(self):
         """First robot run"""
-        self.on_for_distance(SpeedPercent(30), 390)
-        self.on_for_distance(SpeedPercent(-75), 125)
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(390), use_gyro=False)
+        self.on_for_distance(SpeedPercent(-75), self.in_to_mm(125), use_gyro=False)
         self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
         sleep(8)
         # make this an arc so we dont have to aim it
-        self.on_for_distance(SpeedPercent(60), self.in_to_mm(37.5))
-        self.on_for_distance(SpeedPercent(60), self.in_to_mm(-8))
+        self.on_for_distance(SpeedPercent(60), self.in_to_mm(37.5), use_gyro=False)
+        self.on_for_distance(SpeedPercent(60), self.in_to_mm(-8), use_gyro=False)
 
     def second_run(self):
         """Second robot run"""
-        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5))
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
         self.attachment_raise_lower(10, 1)
-        self.on_for_distance(SpeedPercent(30), 3)
-        self.on_for_distance(SpeedPercent(-75), 21)
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(3), use_gyro=False)
+        self.on_for_distance(SpeedPercent(-75), self.in_to_mm(21), use_gyro=False)
+
+    def third_run(self):
+        """Third robot run"""
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
+        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
+
+    def fourth_run(self):
+        """Fourth robot run"""
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
+        sleep(1)
+        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
+
+    def fifth_run(self):
+        """Fifth robot run"""
+        self.on_for_distance(SpeedPercent(30), self.in_to_mm(24.5), use_gyro=False)
+        self.on_arc_left(SpeedPercent(40), self.in_to_mm(1), self.in_to_mm(15))
+        self.on_for_distance(SpeedPercent(-30), self.in_to_mm(10), use_gyro=False)
