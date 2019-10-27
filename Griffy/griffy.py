@@ -38,13 +38,14 @@ class Griffy(MoveDifferential):
     Missions
     """
 
-    def __init__(self, debug_on=True):
+    def __init__(self, debug_on=True, light_from_file=False):
         """
         Initalize a griffy class which is based
         on move differential. Also set up the medium motors
         and all sensors.
         """
         super().__init__(LEFT_LARGE_MOTOR_PORT, RIGHT_LARGE_MOTOR_PORT, WHEEL_CLASS, WHEEL_DISTANCE)
+        self.debug_on = debug_on
         self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
         self.cs = self.left_color_sensor
         self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
@@ -56,8 +57,12 @@ class Griffy(MoveDifferential):
         self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
         self.wheel_circumference = WHEEL_CIRCUMFERENCE
         self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
-        self.debug_on = debug_on
+        self.white_light_intensity = WHITE_LIGHT_INTENSITY
+        self.black_light_intensity = BLACK_LIGHT_INTENSITY
+        if light_from_file:
+            self.read_light_from_file()
         self.start_tone() # A sound at the end to show when it is done.
+        # Set black and white in the init
 
     def debug(self, str):
         """Print to stderr the debug message ``str`` if self.debug is True."""
@@ -117,6 +122,26 @@ class Griffy(MoveDifferential):
         with open(filename, 'w') as f:
             print("{} {}".format(white, black), file=f)
 
+    def read_light_from_file(self, filename=LIGHTFILE):
+        """
+        Reads from light.txt and returns the white
+        and black values as a tuple
+        If error, catch exception, debug.print it, and return None
+        """
+        try:
+            with open(filename, 'r') as f:
+                line1 = f.readlines()[0]
+            values = line1.split(" ")
+            white = values[0].strip() # Removes \n if it exists
+            black = values[1].strip() # Removes \n if it exists
+            self.debug("Returning white and black values: ({}, {})".format(white, black))
+            self.white_light_intensity = white
+            self.black_light_intensity = black
+            return (white, black)
+        except Exception as e:
+            self.debug("Error reading light: {}".format(e))
+            return None
+
     def drive_until_color(self, speed, color, which_color_sensor='right'):
         """
         drives at `SpeedPercent(speed)` until the specified color `stop_color`
@@ -130,7 +155,7 @@ class Griffy(MoveDifferential):
             self.sleep_in_loop()
         self.off()
 
-    def drive_until_white_black(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY, which_color_sensor='left'):
+    def drive_until_white_black(self, speed, which_color_sensor='left'):
         """
         drives at `SpeedPercent(speed)` until white `white_light_intensity`
         then black 'black_light_intensity' 
@@ -140,9 +165,9 @@ class Griffy(MoveDifferential):
         cs = self.choose_color_sensor(which_color_sensor)
         cs.MODE_COL_REFLECT = 'COL-REFLECT'
         self.on(SpeedPercent(speed), SpeedPercent(speed))
-        while cs.reflected_light_intensity <= white_light_intensity:
+        while cs.reflected_light_intensity <= self.white_light_intensity:
             self.sleep_in_loop()
-        while cs.reflected_light_intensity >= black_light_intensity:
+        while cs.reflected_light_intensity >= self.black_light_intensity:
             self.sleep_in_loop()
         self.off()
     
