@@ -1,5 +1,5 @@
 from ev3dev2.console import Console
-from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor
+from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, MoveSteering
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
@@ -22,7 +22,7 @@ LEFT_GYRO_SENSOR_INPUT = INPUT_1
 LEFT_COLOR_SENSOR_INPUT = INPUT_2
 RIGHT_COLOR_SENSOR_INPUT = INPUT_3
 RIGHT_GYRO_SENSOR_INPUT = INPUT_4
-WHITE_LIGHT_INTENSITY = 46
+WHITE_LIGHT_INTENSITY = 44
 BLACK_LIGHT_INTENSITY = 8
 INCHES_TO_MILIMETERS = 25.4
 LIGHTFILE = "/home/robot/light.txt"
@@ -57,6 +57,7 @@ class Griffy(MoveDifferential):
         self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
         self.wheel_circumference = WHEEL_CIRCUMFERENCE
         self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
+        self.move_tank = MoveTank(OUTPUT_B, OUTPUT_C)
         self.white_light_intensity = WHITE_LIGHT_INTENSITY
         self.black_light_intensity = BLACK_LIGHT_INTENSITY
         if light_from_file:
@@ -242,22 +243,27 @@ class Griffy(MoveDifferential):
         self.on_for_distance(SpeedPercent(-75), 21, use_gyro=False)
 
     def third_run(self):
-        """Third robot run"""
-        self.on_for_distance(SpeedPercent(30), 24.5, use_gyro=False)
-        self.on_for_distance(SpeedPercent(-30), 10, use_gyro=False)
+        """Crane: 4"""
+        self.on_for_distance(SpeedPercent(30), 10, use_gyro=False)
+        self.move_tank.on_for_rotations(-20,20, .145)
+        self.on_for_distance(SpeedPercent(-30), 13, use_gyro=False)
+        self.on_for_distance(SpeedPercent(25), 24.5, use_gyro=False)
+        sleep(1)
+        self.on_for_distance(SpeedPercent(-30), 2, use_gyro=False)
+        self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(24))
+
 
     def fourth_run(self):
-        """Fourth robot run"""
+        """Broken building elevator and swing: 7"""
         # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
-        self.on_for_distance(SpeedPercent(30), 1, use_gyro=False)
-        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.86))
+        self.on_for_distance(SpeedPercent(30), 1.1, use_gyro=False)
+        self.move_tank.on_for_rotations(15, -15, .426)
         self.on_for_distance(SpeedPercent(50), 42.65, use_gyro=False)
         self.on_arc_right(SpeedPercent(50), self.in_to_mm(1.8), self.in_to_mm(1.2))
-        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(.75))
-        self.on_for_distance(SpeedPercent(-30), 1, use_gyro=False)
-        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2))
-        self.on_for_distance(SpeedPercent(-30), 8, use_gyro=False)
-        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.5))
-        self.on_for_distance(SpeedPercent(30), 8, use_gyro=False)
-        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(3))
-        self.on_for_distance(SpeedPercent(-30), 8, use_gyro=False)
+        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(.5))
+        self.on_for_distance(SpeedPercent(-20), 5, use_gyro=False)
+        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.65))
+        self.on_for_distance(SpeedPercent(30), 7, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-30), 5, use_gyro=False)
+        self.on_arc_right(SpeedPercent(-30), self.in_to_mm(1.8), self.in_to_mm(2.8))
+        self.on_for_distance(-80, 55)
