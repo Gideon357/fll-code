@@ -1,4 +1,4 @@
-#!/usr/bin/env micropython
+from griffy import
 from time import sleep
 from sys import stderr
 from os import listdir
