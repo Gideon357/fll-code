@@ -143,6 +143,43 @@ class Griffy(MoveDifferential):
             self.debug("Error reading light: {}".format(e))
             return None
 
+    def set_up_sensors_motors(self):
+        """
+        Creates all sensors and motors or returns True or False
+        """
+        try:
+            self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
+        except Exception as e:
+            pass
+        try:
+            self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
+        except Exception as e:
+            pass
+        try:
+            self.right_gyro_sensor = GyroSensor(RIGHT_GYRO_SENSOR_INPUT)
+        except Exception as e:
+            pass
+        try:
+            self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
+        except Exception as e:
+            pass
+        try:
+            self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
+        except Exception as e:
+            pass
+        try:
+            self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
+        except Exception as e:
+            pass
+        try:
+            self.left_large_motor = LargeMotor(LEFT_LARGE_MOTOR_PORT)
+        except Exception as e:
+            pass
+        try:
+            self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
+        except Exception as e:
+            pass
+
     def drive_until_color(self, speed, color, which_color_sensor='right'):
         """
         drives at `SpeedPercent(speed)` until the specified color `stop_color`
