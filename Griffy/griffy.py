@@ -46,15 +46,14 @@ class Griffy(MoveDifferential):
         """
         super().__init__(LEFT_LARGE_MOTOR_PORT, RIGHT_LARGE_MOTOR_PORT, WHEEL_CLASS, WHEEL_DISTANCE)
         self.debug_on = debug_on
-        self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
-        self.cs = self.left_color_sensor
-        self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
-        self.right_gyro_sensor = GyroSensor(RIGHT_GYRO_SENSOR_INPUT)
-        self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
-        self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
-        self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
-        self.left_large_motor = LargeMotor(LEFT_LARGE_MOTOR_PORT)
-        self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
+        error = self.set_up_sensors_motors()
+        if not error is None:
+            # wait until user exits program!!
+            self.debug(error)
+            self.error_tone()
+            while True:
+                self.sleep_in_loop()
+        
         self.wheel_circumference = WHEEL_CIRCUMFERENCE
         self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
         self.move_tank = MoveTank(OUTPUT_B, OUTPUT_C)
@@ -73,6 +72,13 @@ class Griffy(MoveDifferential):
     def start_tone(self):
         player = Sound()
         player.play_tone(500, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+
+    def error_tone(self):
+        player = Sound()
+        player.play_tone(750, 0.2, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+        player.play_tone(250, 0.3, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+        player.play_tone(750, 0.5, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
+        player.play_tone(250, 0.7, delay=0.0, volume=100, play_type=Sound.PLAY_NO_WAIT_FOR_COMPLETE)
 
     def sleep_in_loop(self, sleep_time=0.1):
         sleep(sleep_time)
@@ -97,18 +103,37 @@ class Griffy(MoveDifferential):
         else:
             return self.left_color_sensor
 
+    def write_to_console(self, msg, column, row, reset_console=True, inverse=False, alignment='L', font_size='M'):
+        """Write msg to console at column, and row
+        reset_console clears console first
+        inverse reverses out text
+        alignment: 'L', 'C', or 'R'
+        font_size: 'S', 'M', 'L'
+        Small: 8 rows, 22 columns
+        Medium: 6 rows, 17 columns
+        Large: 4 rows, 12 columns
+        """
+        console = Console()
+        if font_size == 'S':
+            console.set_font('Lat15-TerminusBoldVGA16.psf.gz', True)
+        elif font_size == 'M':
+            console.set_font('Lat15-Terminus20x10.psf.gz', True)
+        else:
+            console.set_font('Lat15-Terminus32x16.psf.gz', True)
+        console.text_at(msg, column, row, reset_console=reset_console, inverse=inverse, alignment=alignment)
+
     def read_from_color_sensor(self, which_color_sensor='right', read_white=True):
         """
         Will show the value of the color sensor on the screen
         and return when any button is pressed
+        TODO: Fix console display of light value which is changing size and location
         """
         cs = self.choose_color_sensor(which_color_sensor)
         cs.MODE_COL_REFLECT = 'COL-REFLECT'
-        console = Console()
         btn = Button()
         light = cs.reflected_light_intensity
         while not btn.any():
-            console.text_at(str(light), column=8, row=14, reset_console=True, inverse=(not read_white), alignment="C")
+            self.write_to_console(str(light), column=5, row=2, reset_console=True, inverse=(not read_white), alignment='C', font_size='L')
             light = cs.reflected_light_intensity
             self.sleep_in_loop()
         return light
@@ -145,41 +170,24 @@ class Griffy(MoveDifferential):
 
     def set_up_sensors_motors(self):
         """
-        Creates all sensors and motors or returns True or False
+        Creates all sensors and motors or returns None or the error
         """
         try:
             self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
-        except Exception as e:
-            pass
-        try:
+            self.cs = self.left_color_sensor
             self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
-        except Exception as e:
-            pass
-        try:
             self.right_gyro_sensor = GyroSensor(RIGHT_GYRO_SENSOR_INPUT)
-        except Exception as e:
-            pass
-        try:
             self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
-        except Exception as e:
-            pass
-        try:
             self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
-        except Exception as e:
-            pass
-        try:
             self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
-        except Exception as e:
-            pass
-        try:
             self.left_large_motor = LargeMotor(LEFT_LARGE_MOTOR_PORT)
-        except Exception as e:
-            pass
-        try:
             self.right_large_motor = LargeMotor(RIGHT_LARGE_MOTOR_PORT)
         except Exception as e:
-            pass
-
+            self.write_to_console(str(e), column=1, row=3, reset_console=True, inverse=True, alignment='L', font_size='M')
+            return e
+        else:
+            return None
+        
     def drive_until_color(self, speed, color, which_color_sensor='right'):
         """
         drives at `SpeedPercent(speed)` until the specified color `stop_color`
@@ -289,18 +297,25 @@ class Griffy(MoveDifferential):
         self.on_for_distance(SpeedPercent(-30), 2, use_gyro=False)
         self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(24))
 
-
     def fourth_run(self):
         """Broken building elevator and swing: 7"""
         # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
-        self.on_for_distance(SpeedPercent(30), 1.1, use_gyro=False)
-        self.move_tank.on_for_rotations(15, -15, .426)
-        self.on_for_distance(SpeedPercent(50), 42.65, use_gyro=False)
-        self.on_arc_right(SpeedPercent(50), self.in_to_mm(1.8), self.in_to_mm(1.2))
-        self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(.5))
-        self.on_for_distance(SpeedPercent(-20), 5, use_gyro=False)
-        self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.65))
-        self.on_for_distance(SpeedPercent(30), 7, use_gyro=False)
-        self.on_for_distance(SpeedPercent(-30), 5, use_gyro=False)
-        self.on_arc_right(SpeedPercent(-30), self.in_to_mm(1.8), self.in_to_mm(2.8))
-        self.on_for_distance(-80, 55)
+        self.on_for_distance(SpeedPercent(30), 1.1, use_gyro=False) # Go 1.1 inches forward
+        self.move_tank.on_for_rotations(15, -15, .395) # Turn to the right
+        self.on_for_distance(SpeedPercent(50), 35.4, use_gyro=False) # Go to the beige circle
+        self.on_for_distance(SpeedPercent(-20), 5, use_gyro=False) # Backup from the houses we put
+        self.move_tank.on_for_rotations(15, -15, .15) # Turn past the houses
+        self.left_medium_motor.on_for_rotations(100, .28) # Turn attachment
+        self.move_tank.on_for_rotations(15, -15, .02) # Turn to the right
+        self.on_for_distance(SpeedPercent(30), 8.5, use_gyro=False) # Go forward 8.5 inches
+        self.left_medium_motor.on_for_rotations(75, .125) # Turn attachment
+        self.move_tank.on_for_rotations(-15, 15, .085) # Tiny turn to adjust
+        self.on_for_distance(SpeedPercent(30), 7, use_gyro=False) # Go forward 7 inches
+        # self.on_arc_right(SpeedPercent(50), self.in_to_mm(1.8), self.in_to_mm(1.2))
+        # self.on_arc_left(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(.5))
+        # self.on_for_distance(SpeedPercent(-20), 5, use_gyro=False)
+        # self.on_arc_right(SpeedPercent(30), self.in_to_mm(1.8), self.in_to_mm(2.65))
+        # self.on_for_distance(SpeedPercent(30), 7, use_gyro=False)
+        # self.on_for_distance(SpeedPercent(-30), 5, use_gyro=False)
+        # self.on_arc_right(SpeedPercent(-30), self.in_to_mm(1.8), self.in_to_mm(2.8))
+        # self.on_for_distance(-80, 55, use_gyro=False)
