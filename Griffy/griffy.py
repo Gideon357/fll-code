@@ -67,7 +67,7 @@ class Griffy(MoveDifferential):
     def debug(self, str):
         """Print to stderr the debug message ``str`` if self.debug is True."""
         if self.debug_on:
-            print(str, file=stderr)
+            print(str, file=sys.stderr)
 
     def start_tone(self):
         player = Sound()
@@ -86,7 +86,7 @@ class Griffy(MoveDifferential):
     def in_to_mm(self, inches):
         return inches * 25.4
 
-    def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
+    def line_square(self, speed:int, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
         """
         Squares the robot to the line using the 
         selected speed 'speed' and the constant intensities
@@ -103,7 +103,7 @@ class Griffy(MoveDifferential):
         else:
             return self.left_color_sensor
 
-    def write_to_console(self, msg, column, row, reset_console=True, inverse=False, alignment='L', font_size='M'):
+    def write_to_console(self, msg:str, column:int, row:int, reset_console=True, inverse=False, alignment='L', font_size='M'):
         """Write msg to console at column, and row
         reset_console clears console first
         inverse reverses out text
@@ -188,7 +188,7 @@ class Griffy(MoveDifferential):
         else:
             return None
         
-    def drive_until_color(self, speed, color, which_color_sensor='right'):
+    def drive_until_color(self, speed:int, color:int, which_color_sensor='right'):
         """
         drives at `SpeedPercent(speed)` until the specified color `stop_color`
         with chosen color sensor `which_color_sensor`
@@ -201,7 +201,7 @@ class Griffy(MoveDifferential):
             self.sleep_in_loop()
         self.off()
 
-    def drive_until_white_black(self, speed, which_color_sensor='left'):
+    def drive_until_white_black(self, speed:int, which_color_sensor='left'):
         """
         drives at `SpeedPercent(speed)` until white `white_light_intensity`
         then black 'black_light_intensity' 
@@ -217,13 +217,13 @@ class Griffy(MoveDifferential):
             self.sleep_in_loop()
         self.off()
     
-    def attachment_raise_lower(self, speed, rotations):
+    def attachment_raise_lower(self, speed:int, rotations:int):
         """
         Raises and lowers the medium motors as a tank
         """
         self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed, distance_in, brake=True, block=True, use_gyro=True, kp=0.6, ki=0.5, kd=0.6, target=0):
+    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=True, kp=0.6, ki=0.5, kd=0.6, target=0):
         """
         Drives for a certain distance
         and has a toglable gyro feature
@@ -319,3 +319,9 @@ class Griffy(MoveDifferential):
         # self.on_for_distance(SpeedPercent(-30), 5, use_gyro=False)
         # self.on_arc_right(SpeedPercent(-30), self.in_to_mm(1.8), self.in_to_mm(2.8))
         # self.on_for_distance(-80, 55, use_gyro=False)
+    def fifth_run(self):
+        self.on_for_distance(50, 22, use_gyro=False)
+        self.move_tank.on_for_rotations(15, -15, .1)
+        self.move_tank.on_for_rotations(-15, 15, .1)
+        self.on_for_distance(-100, 36, use_gyro=False)
+        self.move_tank.on_for_rotations(-15, 15, .25)

@@ -1,4 +1,7 @@
-from griffy import
+#!/usr/bin/env micropython
+
+from Griffy.griffy import Griffy
+from griff.missions import Missions
 from time import sleep
 from sys import stderr
 from os import listdir
@@ -6,7 +9,11 @@ from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.led import Leds
 from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
+import motor_control
+
 current_options = 0
+
+missions = Missions()
 
 """
 Used to create a console menu for switching between programs quickly
@@ -189,18 +196,18 @@ if __name__ == "__main__":
     # menu(CHOICES, before_run_function=before, after_run_function=after)
 
         CHOICES1 = {
-                "up": ("MI1", mission1),
-                "right": ("MI2", mission2),
-                "left": ("MI3", mission3),
-                "down": ("SHOW", lambda: show_sensors(5)),
+                "up": ("MI1", missions.first_run),
+                "right": ("MI2", missions.second_run),
+                "left": ("MI3", missions.third_run),
+                "down": ("Motor Control", motor_control.main),
                 "enter": ("NEXT", next_page)
         }
 
         CHOICES2 = {
-                "up": ("MI1.1", mission1),
-                "right": ("MI2.2", mission2),
-                "left": ("MI3.4", mission3),
-                "down": ("SHOW.1", lambda: show_sensors(5)),
+                "up": ("MI5", mission1),
+                "right": ("MI6", mission2),
+                "left": ("MI7", mission3),
+                "down": ("Motor Control", motor_control.main),
                 "enter": ("NEXT", next_page)
         }
         choices = [CHOICES1, CHOICES2]
