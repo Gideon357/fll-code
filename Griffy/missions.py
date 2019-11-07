@@ -10,7 +10,6 @@ from ev3dev2.console import Console
 from ev3dev2.led import Leds
 from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
 
-Griffy = Griffy()
 
 class Missions:
     def __init__(self):
@@ -65,4 +64,10 @@ class Missions:
         # self.on_for_distance(SpeedPercent(-30), 5, use_gyro=False)
         # self.on_arc_right(SpeedPercent(-30), self.in_to_mm(1.8), self.in_to_mm(2.8))
         # self.on_for_distance(-80, 55, use_gyro=False)
+    def fifth_run(self):
+        self.on_for_distance(50, 22, use_gyro=False)
+        self.move_tank.on_for_rotations(15, -15, .1)
+        self.move_tank.on_for_rotations(-15, 15, .1)
+        self.on_for_distance(-100, 36, use_gyro=False)
+        self.move_tank.on_for_rotations(-15, 15, .25)
     
