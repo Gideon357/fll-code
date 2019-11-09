@@ -86,7 +86,7 @@ class Griffy(MoveDifferential):
     def in_to_mm(self, inches):
         return inches * 25.4
 
-    def line_square(self, speed:int, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
+    def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
         """
         Squares the robot to the line using the 
         selected speed 'speed' and the constant intensities
