@@ -50,6 +50,9 @@ class Missions(Griffy):
         self.move_tank.on_for_rotations(-15, 15, .1)
         self.on_for_distance(-100, 36, use_gyro=False)
         self.move_tank.on_for_rotations(-15, 15, .25)
+        self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
+        
+
 
     def fifth_run(self):
         """Broken building elevator and swing: 7"""
