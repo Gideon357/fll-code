@@ -67,7 +67,7 @@ class Griffy(MoveDifferential):
     def debug(self, str):
         """Print to stderr the debug message ``str`` if self.debug is True."""
         if self.debug_on:
-            print(str, file=sys.stderr)
+            print(str, file=stderr)
 
     def start_tone(self):
         player = Sound()
@@ -223,7 +223,7 @@ class Griffy(MoveDifferential):
         """
         self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=True, kp=0.6, ki=0.5, kd=0.6, target=0):
+    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=False, kp=0.6, ki=0.5, kd=0.6, target=0):
         """
         Drives for a certain distance
         and has a toglable gyro feature
