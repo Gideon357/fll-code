@@ -3,13 +3,13 @@
 from .griffy import Griffy
 from .button import Button
 from ev3dev2.motor import SpeedPercent
-from time import sleep
 from sys import stderr
 from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.led import Leds
 from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
-
+from time import sleep
+import time
 
 class Missions(Griffy):
     """
@@ -50,6 +50,7 @@ class Missions(Griffy):
         self.move_tank.on_for_rotations(-15, 15, .1)
         self.on_for_distance(-100, 36, use_gyro=False)
         self.move_tank.on_for_rotations(-15, 15, .25)
+        self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
 
     def fifth_run(self):
         """Broken building elevator and swing: 7"""
