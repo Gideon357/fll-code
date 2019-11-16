@@ -19,41 +19,36 @@ class Missions(Griffy):
     def first_run(self):
         """Crane: 4"""
         self.on_for_distance(SpeedPercent(30), 10, use_gyro=False)
-        self.move_tank.on_for_rotations(-20,20, .145)
+        self.move_tank.on_for_rotations(-20,20, .19)
         self.on_for_distance(SpeedPercent(-30), 13, use_gyro=False)
         self.on_for_distance(SpeedPercent(25), 24.5, use_gyro=False)
         sleep(1)
         self.on_for_distance(SpeedPercent(-30), 2, use_gyro=False)
-        self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(24))
+        self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(25))
 
     def second_run(self):
-        """Buildings, Innovation: ???"""
-        self.on_for_distance(SpeedPercent(30), 390, use_gyro=False)
-        self.on_for_distance(SpeedPercent(-75), 125, use_gyro=False)
+        """Buildings, Innovation: 2"""
+        self.on_for_distance(SpeedPercent(30), 15.4, use_gyro=False)
+        self.on_for_distance(SpeedPercent(-75), 6, use_gyro=False)
         self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
-        sleep(8)
-        # make this an arc so we dont have to aim it
-        self.on_for_distance(SpeedPercent(60), 37.5, use_gyro=False)
-        self.on_for_distance(SpeedPercent(-60), 8, use_gyro=False)
     
     def third_run(self):
-        """Treehouse: """
+        """Treehouse: ???"""
         self.on_for_distance(SpeedPercent(30), 24.5, use_gyro=False)
         self.attachment_raise_lower(10, 1)
         self.on_for_distance(SpeedPercent(30), 3, use_gyro=False)
         self.on_for_distance(SpeedPercent(-75), 21, use_gyro=False)
 
     def fourth_run(self):
-        """Traffic Jam: wall"""
+        """Traffic Jam: 2"""
         self.on_for_distance(50, 22, use_gyro=False)
         self.move_tank.on_for_rotations(15, -15, .1)
         self.move_tank.on_for_rotations(-15, 15, .1)
         self.on_for_distance(-100, 36, use_gyro=False)
-        self.move_tank.on_for_rotations(-15, 15, .25)
-        self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
+        # add turn and lower back
 
     def fifth_run(self):
-        """Broken building elevator and swing: 7"""
+        """Broken building elevator and swing: Jig"""
         # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
         self.left_medium_motor.on_for_rotations(-100, .1) # Turn attachment
         self.on_for_distance(SpeedPercent(50), 38, use_gyro=False) # Go to the beige circle
@@ -75,3 +70,12 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(30), 3, use_gyro=False)
         self.move_tank.on_for_rotations(-25, 25, .31) # Turn to the right
         self.on_for_distance(-80, 60, use_gyro=False)
+    
+    def sixth_run(self):
+        self.on_for_distance(50, 22)
+        # self.line_square(20)
+        self.move_tank.on_for_rotations(-15, 15, .571) 
+        # self.line_square(20)
+        self.on_for_distance(40, 15)
+        self.move_tank.on_for_rotations(15, -15, .1) 
+        self.on_for_distance(10, 15)

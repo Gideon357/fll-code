@@ -86,13 +86,24 @@ class Griffy(MoveDifferential):
     def in_to_mm(self, inches):
         return inches * 25.4
 
-    def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
-        """
-        Squares the robot to the line using the 
-        selected speed 'speed' and the constant intensities
-        """
-        # Need to think of a way to involve all cases
-        pass
+    # def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
+    #     """
+    #     Squares the robot to the line using the 
+    #     selected speed 'speed' and the constant intensities
+    #     """
+    #     left_cs = self.left_color_sensor
+    #     right_cs = self.right_color_sensor
+    #     left_cs.MODE_COL_REFLECT = 'COL-REFLECT'
+    #     right_cs.MODE_COL_REFLECT = 'COL-REFLECT'
+    #     while not self.left_color_sensor.reflected_light_intensity <= black_light_intensity and self.right_color_sensor.reflected_light_intensity <= black_light_intensity:
+    #         if self.left_color_sensor.reflected_light_intensity > black_light_intensity and self.right_color_sensor.reflected_light_intensity > black_light_intensity:
+    #             self.move_tank.on(speed, speed)
+    #         if self.left_color_sensor.reflected_light_intensity <= black_light_intensity and self.right_color_sensor.reflected_light_intensity > black_light_intensity:
+    #             self.right_large_motor.on(speed)
+    #             self.left_large_motor.off()
+    #         if self.left_color_sensor.reflected_light_intensity > black_light_intensity and self.right_color_sensor.reflected_light_intensity <= black_light_intensity:
+    #             self.left_large_motor.on(speed)
+    #             self.right_large_motor.off()
 
     def choose_color_sensor(self, which_color_sensor='right'):
         """
