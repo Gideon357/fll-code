@@ -1,7 +1,4 @@
 #!/usr/bin/env micropython
-
-from Griffy.griffy import Griffy
-from griff.missions import Missions
 from time import sleep
 from sys import stderr
 from os import listdir
@@ -9,11 +6,11 @@ from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.led import Leds
 from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
-import motor_control
+from Griffy.missions import Missions
 
 current_options = 0
+choices = []
 
-missions = Missions()
 
 """
 Used to create a console menu for switching between programs quickly
@@ -69,18 +66,7 @@ def menu(choices, before_run_function=None, after_run_function=None):
     Green = Ready for button, Amber = Ready for second button, Red = Running
     Parameters:
     - `choices` a dictionary of tuples "button-name": ("mission-name", function-to-call)
-        Example:
-            choices = {
-                # "button-name": ("mission-name", function-to-call)
-                # or "button-name": ("mission-name", lambda: call(x, y, z))
-                "enter": ("CAL", lambda: auto_calibrate(robot, 1.0)),
-                "up": ("MI2", fmission2),
-                "right": ("MI3", fmission3),
-                "down": ("MI4", fmission4),
-                "left": ("MI5", fmission5)
-            }
-        where fmission2, fmission3 are functions;
-        note don't call them with parentheses, unless preceded by lambda: to defer the call
+    NOTE: Don't call functions with parentheses, unless preceded by lambda: to defer the call
     - `before_run_function` when not None, call this function before each mission run, passed with mission-name
     - `after_run_function` when not None, call this function after each mission run, passed with mission-name
     """
@@ -120,7 +106,7 @@ def menu(choices, before_run_function=None, after_run_function=None):
                     mission_function()
                 except Exception as ex:
                     print("**** Exception when running")
-                    print(ex)
+                    raise(ex)
                 finally:
                     if after_run_function is not None:
                         after_run_function(name)
@@ -134,82 +120,75 @@ def menu(choices, before_run_function=None, after_run_function=None):
 
 
 if __name__ == "__main__":
+    missions = Missions(debug_on=False)
 
     # This is the main program to demonstrate the console menu logic above.
-    #
-    # Define functions that represent different missions
-    # Note: these can be imported from different modules (files)
-    # and use lambda notation to defer the function call
-    # i.e. lambda : call(a, b, c)
 
-        def next_page():
-            global current_options 
-            current_options = current_options + 1
-            menu(choices[current_options], before_run_function=before, after_run_function=after)
+    def calibrate():
+        """ Placeholder for call to your calibration logic to set the black and white values for your color sensors """
+        print("calibrating...")
+        sleep(1)
 
-            
+    def show_sensors(iterations):
+        """ Show the EV3 sensors, current mode and value """
+        sensors = list(list_sensors(address=[INPUT_1, INPUT_2, INPUT_3]))   # , INPUT_4
+        for _ in range(iterations):
+            for sensor in sensors:
+                print("{} {}: {}".format(sensor.address, sensor.mode, sensor.value()))
+                sleep(.5)
+        sleep(10)
 
-        def show_sensors(iterations):
-                """ Show the EV3 sensors, current mode and value """
-                sensors = list(list_sensors(address=[INPUT_1, INPUT_2, INPUT_3]))   # , INPUT_4
-                for _ in range(iterations):
-                        for sensor in sensors:
-                                print("{} {}: {}".format(sensor.address, sensor.mode, sensor.value()))
-                                sleep(.5)
-                                sleep(10)
+    def mission1():
+        print("mission 1...")
+        sleep(1)
 
-        def mission1():
-                print("mission 1...")
-                sleep(1)
+    def mission2():
+        print("mission 2...")
+        sleep(1)
 
-        def mission2():
-                print("mission 2...")
-                sleep(1)
+    def mission3():
+        print("mission 3...")
+        sleep(1)
+        raise Exception('Raised error')
 
-        def mission3():
-                print("mission 3...")
-                sleep(1)
-    # Define the functions to be called before and after each run.
-    # Functions will be called with the mission_name as the argument.
-    # Useful for resetting motor positions between runs, etc.
+    def next():
+        global current_options
+        global choices
+        global menu
+        current_options += 1
+        menu(choices[current_options], before_run_function=None, after_run_function=None)
+    
+    def back():
+        global current_options
+        global choices
+        global menu
+        current_options -= 1
+        menu(choices[current_options], before_run_function=None, after_run_function=None)
 
-        def before(mission_name):
-                print("before " + mission_name)
 
-        def after(mission_name):
-                print("after " + mission_name)
-                sleep(1)
+    def before(mission_name):
+        print("before " + mission_name)
 
-    # Define the buttons, mission names, functions for the console menu.
-    # Key is the button assignment: one of "enter", "up", "right", "down", "left"
-    # Note the "backspace" button interrupts the program and returns to Brickman
-    # Example:
-    # CHOICES = {
-    #     # "button-name": ("mission-name", function-to-call)
-    #     # or "button-name": ("mission-name", lambda: call(x, y, z))
-    #     "up": ("MI1", mission1),
-    #     "right": ("MI2", mission2),
-    #     "left": ("MI3", mission3),
-    #     "down": ("SHOW", lambda: show_sensors(5)),
-    #     "enter": ("CAL", calibrate)
-    # }
-    # menu(CHOICES, before_run_function=before, after_run_function=after)
+    def after(mission_name):
+        print("after " + mission_name)
+        sleep(1)
 
-        CHOICES1 = {
-                "up": ("MI1", missions.first_run),
-                "right": ("MI2", missions.second_run),
-                "left": ("MI3", missions.third_run),
-                "down": ("Motor Control", motor_control.main),
-                "enter": ("NEXT", next_page)
-        }
+    CHOICES = {
+        "up": ("M2", missions.second_run),
+        "right": ("M3", missions.third_run),
+        "left": ("M1",missions.first_run),
+        "down": ("NEXT", next),
+        "enter": ("CAL", calibrate)
+    }
+    CHOICES1 = {
+        "up": ("M5", missions.fifth_run),
+        "right": ("M6", missions.sixth_run),
+        "left": ("M4", missions.fourth_run),
+        "down": ("BACK", back),
+        "enter": ("CAL", calibrate)
+    }
+    
+    choices = [CHOICES,CHOICES1]
 
-        CHOICES2 = {
-                "up": ("MI5", mission1),
-                "right": ("MI6", mission2),
-                "left": ("MI7", mission3),
-                "down": ("Motor Control", motor_control.main),
-                "enter": ("NEXT", next_page)
-        }
-        choices = [CHOICES1, CHOICES2]
 
-        menu(choices[current_options], before_run_function=before, after_run_function=after)
+    menu(choices[current_options], before_run_function=None, after_run_function=None)

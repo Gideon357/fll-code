@@ -5,6 +5,4 @@ from Griffy.missions import Missions
 from ev3dev2.sensor.lego import ColorSensor, GyroSensor
 from ev3dev2.motor import SpeedPercent
 griffy = Griffy()
-missions = Missions()
-
-missions.fifth_run()
+.on_arc_right(SpeedPercent(30), griffy.in_to_mm(1.8), griffy.in_to_mm(2.45))
