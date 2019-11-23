@@ -183,7 +183,7 @@ if __name__ == "__main__":
         "up": ("M5", missions.fifth_run),
         "right": ("M6", missions.sixth_run),
         "left": ("M4", missions.fourth_run),
-        "down": ("ROCKY", missions.rocky),
+        "down": ("BACK", back),
         "enter": ("OFF", missions.off)
     }
     
