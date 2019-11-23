@@ -77,11 +77,10 @@ class Missions(Griffy):
         self.on_for_distance(-80, 60)
     
     def sixth_run(self):
-        self.on_for_distance(50, 22)
-        self.move_tank.on_for_rotations(-15, 15, .571)
-        self.on_for_distance(40, 15)
-        self.move_tank.on_for_rotations(15, -15, .1) 
-        self.on_for_distance(10, 15)
+        self.move_tank.on_for_rotations(-15, 15, .13)
+        self.on_for_distance(-50, 34.8)
+        self.move_tank.on_for_rotations(-15, 15, .55)
+        self.on_for_distance(-60, 21.2)
 
     def drone_run(self):
         self.on_for_distance(50, 30)
