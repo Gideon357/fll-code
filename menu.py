@@ -122,7 +122,6 @@ def menu(choices, before_run_function=None, after_run_function=None):
 if __name__ == "__main__":
     missions = Missions(debug_on=False)
 
-    # This is the main program to demonstrate the console menu logic above.
 
     def calibrate():
         """ Placeholder for call to your calibration logic to set the black and white values for your color sensors """
@@ -184,7 +183,7 @@ if __name__ == "__main__":
         "up": ("M5", missions.fifth_run),
         "right": ("M6", missions.sixth_run),
         "left": ("M4", missions.fourth_run),
-        "down": ("BACK", back),
+        "down": ("ROCKY", missions.rocky),
         "enter": ("OFF", missions.off)
     }
     
