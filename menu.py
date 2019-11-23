@@ -166,6 +166,7 @@ if __name__ == "__main__":
 
 
     def before(mission_name):
+        missions.start_tone
         print("before " + mission_name)
 
     def after(mission_name):
