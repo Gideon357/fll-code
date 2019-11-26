@@ -58,7 +58,7 @@ def wait_for_button_press(button):
     return pressed
 
 
-def menu(choices, before_run_function=None, after_run_function=None):
+def menu(choices, before_run_function=None, after_run_function=None, skip_to_next_page=True):
     """
     Console Menu that accepts choices and corresponding functions to call.
     The user must press the same button twice: once to see their choice highlited,
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     CHOICES = {
         "up": ("M2", missions.second_run),
         "right": ("M3", missions.third_run),
-        "left": ("M1",missions.first_run),
+        "left": ("M1", missions.first_run),
         "down": ("NEXT", next),
         "enter": ("OFF", missions.off)
     }

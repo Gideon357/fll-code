@@ -27,12 +27,23 @@ class Missions(Griffy):
         self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(25))
 
     def second_run(self):
-        """Buildings, Innovation: 2"""
-        self.on_for_distance(SpeedPercent(30), 15.4)
-        self.on_for_distance(SpeedPercent(-75), 6)
-        self.on_arc_left(-80, self.in_to_mm(4), self.in_to_mm(15))
-    
+        """Buildings and Traffic Jam, Innovation: 2"""
+        self.on_for_distance(SpeedPercent(75), 15)
+        self.on_for_distance(SpeedPercent(-100), 14.5)
+        self.move_tank.on_for_rotations(100, -100, .6)
+        self.on_for_distance(90, 20)
+        self.move_tank.on_for_rotations(60, -60, .15)
+        self.on_for_distance(-100, 27)
+        self.move_tank.on_for_rotations(-100, 100, .62)
+
     def third_run(self):
+        """Traffic Jam Extra"""
+        self.on_for_distance(90, 20)
+        self.move_tank.on_for_rotations(60, -60, .15)
+        self.on_for_distance(-100, 27)
+        self.move_tank.on_for_rotations(-100, 100, .62)
+    
+    def fourth_run(self):
         """Treehouse: Aim"""
         self.on_for_distance(SpeedPercent(30), 21)
         self.on_for_distance(SpeedPercent(10), 4.5)
@@ -40,16 +51,6 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(-100), 21.5)
         self.move_tank.on_for_rotations(25, -25, .25) # Turn to the right
         self.on_for_distance(SpeedPercent(-75), 12)
-
-    def fourth_run(self):
-        """Traffic Jam: 2"""
-        self.on_for_distance(50, 22)
-        self.move_tank.on_for_rotations(15, -15, .1)
-        self.move_tank.on_for_rotations(-15, 15, .1)
-        self.on_for_distance(-100, 26)
-        self.move_tank.on_for_rotations(55, -55, .26)
-        self.on_for_distance(-100, 12)
-        # add turn and lower back
 
     def fifth_run(self):
         """Broken building elevator and swing: Jig"""
