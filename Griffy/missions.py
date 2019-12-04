@@ -29,10 +29,12 @@ class Missions(Griffy):
     def second_run(self):
         """Buildings and Traffic Jam, Innovation: 2"""
         self.on_for_distance(SpeedPercent(75), 15)
-        self.on_for_distance(SpeedPercent(-100), 14.5)
+        self.on_for_distance(SpeedPercent(-100), 15.5)
+        self.on_for_distance(SpeedPercent(50), .35)
         self.move_tank.on_for_rotations(100, -100, .6)
         self.on_for_distance(90, 20)
         self.move_tank.on_for_rotations(60, -60, .15)
+        self.move_tank.on_for_rotations(-60, 60, .1)
         self.on_for_distance(-100, 27)
         self.move_tank.on_for_rotations(-100, 100, .62)
 
@@ -83,7 +85,7 @@ class Missions(Griffy):
         """Ramp: Jig """
         self.move_tank.on_for_rotations(-15, 15, .13)
         self.on_for_distance(-50, 34.8)
-        self.move_tank.on_for_rotations(-15, 15, .55)
+        self.move_tank.on_for_rotations(-15, 15, .58)
         self.on_for_distance(-60, 21.2)
 
     def drone_run(self):
