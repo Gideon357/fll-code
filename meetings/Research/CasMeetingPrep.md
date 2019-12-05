@@ -24,4 +24,4 @@
     ii. Retailer vs Manufactuere <br/>
   b. Implementation <br/>
     i. Diagram on fit in <br/>
-    
+  
