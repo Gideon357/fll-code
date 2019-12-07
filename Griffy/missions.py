@@ -19,12 +19,12 @@ class Missions(Griffy):
     def first_run(self):
         """Crane: 4"""
         self.on_for_distance(SpeedPercent(30), 10)
-        self.move_tank.on_for_rotations(-20, 20, .20)
-        self.on_for_distance(SpeedPercent(-30), 13)
+        self.move_tank.on_for_rotations(-20, 20, .15)
+        self.on_for_distance(SpeedPercent(-30), 16)
         self.on_for_distance(SpeedPercent(40), 24.5)
         sleep(1)
-        self.on_for_distance(SpeedPercent(-30), 2)
-        self.on_arc_left(SpeedPercent(-50), self.in_to_mm(6), self.in_to_mm(25))
+        self.on_for_distance(SpeedPercent(-30), 4)
+        self.on_arc_left(SpeedPercent(-80), self.in_to_mm(4.5), self.in_to_mm(15))
 
     def second_run(self):
         """Buildings and Traffic Jam, Innovation: 2"""
@@ -78,7 +78,7 @@ class Missions(Griffy):
         self.move_tank.on_for_rotations(-25, 25, .2) # Turn to the left
         self.on_for_distance(SpeedPercent(-30), 7)
         self.on_for_distance(SpeedPercent(30), 3)
-        self.move_tank.on_for_rotations(-25, 25, .28) # Turn to the right
+        self.move_tank.on_for_rotations(-25, 25, .28) # Turn to the left
         self.on_for_distance(-80, 60)
     
     def sixth_run(self):
