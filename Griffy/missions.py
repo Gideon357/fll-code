@@ -48,7 +48,7 @@ class Missions(Griffy):
     def fourth_run(self):
         """Treehouse: Aim"""
         self.on_for_distance(SpeedPercent(30), 23)
-        self.on_for_distance(SpeedPercent(20), 2)
+        self.on_for_distance(SpeedPercent(15), 2)
         self.on_for_distance(SpeedPercent(-10), 2.5)
         self.on_for_distance(SpeedPercent(-100), 21.5)
         self.move_tank.on_for_rotations(25, -25, .25) # Turn to the right
