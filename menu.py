@@ -7,10 +7,10 @@ from ev3dev2.console import Console
 from ev3dev2.led import Leds
 from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from Griffy.missions import Missions
+from threading import Thread
 
 current_options = 0
 choices = []
-
 
 """
 Used to create a console menu for switching between programs quickly
@@ -103,7 +103,8 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
                     name, mission_function = choices[pressed]
                     if before_run_function is not None:
                         before_run_function(name)
-                    mission_function()
+                    mission_thread = Thread(target=mission_function)
+                    mission_thread.start()
                 except Exception as ex:
                     print("**** Exception when running")
                     raise(ex)
@@ -121,7 +122,6 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
 
 if __name__ == "__main__":
     missions = Missions(debug_on=False)
-
 
     def calibrate():
         """ Placeholder for call to your calibration logic to set the black and white values for your color sensors """
@@ -149,6 +149,9 @@ if __name__ == "__main__":
         print("mission 3...")
         sleep(1)
         raise Exception('Raised error')
+        
+    def stop():
+    
 
     def next():
         global current_options
@@ -178,14 +181,14 @@ if __name__ == "__main__":
         "right": ("M3", missions.third_run),
         "left": ("M1", missions.first_run),
         "down": ("NEXT", next),
-        "enter": ("OFF", missions.off)
+        "enter": ("OFF", stop)
     }
     CHOICES1 = {
         "up": ("M5", missions.fifth_run),
         "right": ("M6", missions.sixth_run),
         "left": ("M4", missions.fourth_run),
         "down": ("BACK", back),
-        "enter": ("OFF", missions.off)
+        "enter": ("OFF", stop)
     }
     
     choices = [CHOICES,CHOICES1]
