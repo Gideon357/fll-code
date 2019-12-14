@@ -18,7 +18,6 @@ without having to return to Brickman to find and launch a program.
 Demonstrates the EV3DEV2 Console(), Led(), and Button() classes.
 """
 
-
 def get_positions(console):
     """
     Compute a dictionary keyed by button names with horizontal alignment,
@@ -39,7 +38,6 @@ def get_positions(console):
         "enter": ("C", midcol, midrow)
     }
 
-
 def wait_for_button_press(button):
     """
     Wait for a button to be pressed and released.
@@ -56,7 +54,6 @@ def wait_for_button_press(button):
                 pass
             break
     return pressed
-
 
 def menu(choices, before_run_function=None, after_run_function=None, skip_to_next_page=True):
     """
@@ -119,7 +116,6 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
                 leds.set_color("LEFT", "AMBER")
                 leds.set_color("RIGHT", "AMBER")
 
-
 if __name__ == "__main__":
     missions = Missions(debug_on=False)
 
@@ -167,7 +163,6 @@ if __name__ == "__main__":
         current_options -= 1
         menu(choices[current_options], before_run_function=None, after_run_function=None)
 
-
     def before(mission_name):
         missions.start_tone
         print("before " + mission_name)
@@ -192,6 +187,5 @@ if __name__ == "__main__":
     }
     
     choices = [CHOICES,CHOICES1]
-
 
     menu(choices[current_options], before_run_function=None, after_run_function=None)
