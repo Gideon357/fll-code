@@ -24,7 +24,7 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(40), 24.5)
         sleep(1)
         self.on_for_distance(SpeedPercent(-30), 4)
-        self.on_arc_left(SpeedPercent(-80), self.in_to_mm(4.5), self.in_to_mm(15))
+        self.on_arc_left(SpeedPercent(-80), self.in_to_mm(4.8), self.in_to_mm(18.5))
 
     def second_run(self):
         """Buildings and Traffic Jam, Innovation: 2"""
@@ -32,23 +32,22 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(-100), 15.5)
         self.on_for_distance(SpeedPercent(50), .35)
         self.move_tank.on_for_rotations(100, -100, .6)
-        self.on_for_distance(90, 20)
+        self.on_for_distance(70, 20)
         self.move_tank.on_for_rotations(60, -60, .15)
-        self.move_tank.on_for_rotations(-60, 60, .2)
-        self.on_for_distance(-100, 29)
+        self.on_for_distance(-100, 31)
         self.move_tank.on_for_rotations(-100, 100, .62)
 
     def third_run(self):
         """Traffic Jam Extra"""
-        self.on_for_distance(90, 20)
-        self.move_tank.on_for_rotations(60, -60, .15)
-        self.on_for_distance(-100, 27)
+        self.on_for_distance(70, 20)
+        self.move_tank.on_for_rotations(100, -100, .15)
+        self.on_for_distance(-100, 31)
         self.move_tank.on_for_rotations(-100, 100, .62)
     
     def fourth_run(self):
         """Treehouse: Aim"""
         self.on_for_distance(SpeedPercent(30), 23)
-        self.on_for_distance(SpeedPercent(15), 2)
+        self.on_for_distance(SpeedPercent(15), 3.5)
         self.on_for_distance(SpeedPercent(-10), 2.5)
         self.on_for_distance(SpeedPercent(-100), 21.5)
         self.move_tank.on_for_rotations(25, -25, .25) # Turn to the right
@@ -57,9 +56,9 @@ class Missions(Griffy):
     def fifth_run(self):
         """Broken building elevator and swing: Jig"""
         # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
-        self.left_medium_motor.on_for_rotations(-80, .1) # Turn attachment
+        self.left_medium_motor.on_for_rotations(-80, .2) # Turn attachment
         sleep(.5)
-        self.move_tank.on_for_rotations(SpeedPercent(-25), 25, .111)
+        self.move_tank.on_for_rotations(SpeedPercent(-25), 25, .109)
         self.on_for_distance(SpeedPercent(50), 38) # Go to the beige circle
         self.left_medium_motor.on_for_seconds(10, 0.57) # Turn attachment
         self.on_for_distance(SpeedPercent(-20), 5.5) # Backup from the houses we put
@@ -74,11 +73,11 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(-20), 4) # Back up
         self.left_medium_motor.on_for_rotations(75, .32) # Turn attachment
         self.move_tank.on_for_rotations(25, -25, .349) # Turn to the right
-        self.on_for_distance(SpeedPercent(30), 7)
+        self.on_for_distance(SpeedPercent(30), 8.5)
         self.move_tank.on_for_rotations(-25, 25, .2) # Turn to the left
         self.on_for_distance(SpeedPercent(-30), 7)
         self.on_for_distance(SpeedPercent(30), 3)
-        self.move_tank.on_for_rotations(-25, 25, .28) # Turn to the left
+        self.move_tank.on_for_rotations(-25, 25, .265) # Turn to the left
         self.on_for_distance(-80, 60)
     
     def sixth_run(self):
