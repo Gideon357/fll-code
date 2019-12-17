@@ -147,7 +147,7 @@ if __name__ == "__main__":
         raise Exception('Raised error')
         
     def stop():
-    
+        pass
 
     def next():
         global current_options
