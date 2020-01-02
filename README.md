@@ -48,7 +48,8 @@ mkdir .venvs # directory to store all virtual environments
 python3 -mvenv .venvs/ev3dev2 # create the empty environment
 . .venvs/ev3dev2/bin/activate # turn on the environment
 pip install --upgrade pip # upgrade pip (python package installer) to latest version
-pip install python-ev3dev2 # install to OS X the ev3dev2 libraries for command completion
+# install Python requirements including python-ev3dev2 and pylint from requirements.txt
+pip install -r requirements.txt
 ```
 
 NOTE: the below step was already completed in the `.vscode/settings.json` file in the git repo
