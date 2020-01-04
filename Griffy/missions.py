@@ -32,7 +32,8 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(50), .35) # Move a small amount off of the wall
         self.move_tank.on_for_rotations(100, -100, .6) # Turn to the right 90 degrees
         self.on_for_distance(50, 22) # Go to the Traffic Jam
-        self.move_tank.on_for_rotations(60, -60, .15) # Turn to the right and hit it up
+        self.move_tank.on_for_rotations(100, -100, .15) # Turn to the right and hit it up
+        sleep(0.25)
         self.on_for_distance(-100, 31) # Go back home at 100 power
         self.move_tank.on_for_rotations(100, -100, .62) # Turn to the right
 

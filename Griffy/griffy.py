@@ -229,7 +229,6 @@ class Griffy(MoveDifferential):
         HIGHLY SUGGESTED TO NOT CHANGE K VALUES
         TODO: Define Parameters so people know what they are for
         TODO: Explain gyro algorithm
-        TODO: Add comments throughout
 
         ``speed`` can be a percentage or a :class:`ev3dev2.motor.SpeedValue`
         object, enabling use of other units.
