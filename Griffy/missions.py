@@ -17,21 +17,19 @@ class Missions(Griffy):
 
     def first_run(self):
         """Crane: 4"""
-        self.on_for_distance(SpeedPercent(30), 10) # Go forward 10 inces
-        self.move_tank.on_for_rotations(SpeedPercent(-20), SpeedPercent(20), .165) # Turn to the left
-        self.on_for_distance(SpeedPercent(-30), 16) # Go backward and square with the wall
         self.on_for_distance(SpeedPercent(40), 24.5) # Go forward 24.5 inches to the crane
-        sleep(1)
+        sleep(1) # Wait for 1 second
         self.on_for_distance(SpeedPercent(-30), 4) # Slowly back out
-        self.on_arc_left(SpeedPercent(-80), self.in_to_mm(4.8), self.in_to_mm(18.5)) # Arc back into base
+        self.on_arc_left(SpeedPercent(-80), self.in_to_mm(4.8), self.in_to_mm(22)) # Arc back into base
 
     def second_run(self):
         """Buildings and Traffic Jam, Innovation: 2"""
         self.on_for_distance(SpeedPercent(25), 15) # Go forward 15 inches to drop off the houses
-        self.on_for_distance(SpeedPercent(-100), 15.5) # Go backward at 100 power all of the way to the wall
+        sleep(0.5)
+        self.on_for_distance(SpeedPercent(-80), 15.5) # Go backward at 100 power all of the way to the wall
         self.on_for_distance(SpeedPercent(50), .35) # Move a small amount off of the wall
-        self.move_tank.on_for_rotations(100, -100, .6) # Turn to the right 90 degrees
-        self.on_for_distance(50, 22) # Go to the Traffic Jam
+        self.move_tank.on_for_rotations(100, -100, .63) # Turn to the right 90 degrees
+        self.on_for_distance(50, 21) # Go to the Traffic Jam
         self.move_tank.on_for_rotations(100, -100, .15) # Turn to the right and hit it up
         sleep(0.25)
         self.on_for_distance(-100, 31) # Go back home at 100 power
@@ -39,7 +37,7 @@ class Missions(Griffy):
 
     def third_run(self):
         """Traffic Jam Extra"""
-        self.on_for_distance(70, 20) # Go to the Traffic Jam
+        self.on_for_distance(70, 19) # Go to the Traffic Jam
         self.move_tank.on_for_rotations(100, -100, .15) # Turn to the right and hit it up
         self.on_for_distance(-100, 31) # Go back home at 100 power
         self.move_tank.on_for_rotations(100, -100, .62) # Turn to the right
@@ -62,7 +60,7 @@ class Missions(Griffy):
         self.on_for_distance(SpeedPercent(50), 38) # Go to the beige circle
         self.left_medium_motor.on_for_seconds(10, 0.57) # Turn attachment
         self.on_for_distance(SpeedPercent(-20), 5.5) # Backup from the houses we put
-        self.move_tank.on_for_rotations(25, -25, .17) # Turn past the houses
+        self.move_tank.on_for_rotations(25, -25, .18) # Turn past the houses
         self.left_medium_motor.on_for_seconds(-50, 0.9) # Turn attachment
         sleep(1)
         self.on_for_distance(SpeedPercent(60), 13.5) # Go forward 13.5 inches
@@ -77,7 +75,7 @@ class Missions(Griffy):
         self.move_tank.on_for_rotations(-25, 25, .2) # Turn to the left
         self.on_for_distance(SpeedPercent(-30), 7) # Go backward from swing
         self.on_for_distance(SpeedPercent(30), 3) # Go forward 3 inches
-        self.move_tank.on_for_rotations(-25, 25, .265) # Turn to the left
+        self.move_tank.on_for_rotations(-25, 25, .32) # Turn to the left
         self.on_for_distance(-80, 60) # Go 60 inches backwards, arriving home
     
     def sixth_run(self):
