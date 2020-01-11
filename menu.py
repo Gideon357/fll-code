@@ -55,7 +55,7 @@ def wait_for_button_press(button):
             break
     return pressed
 
-def menu(choices, before_run_function=griffy.start_tone(), after_run_function=None, skip_to_next_page=True):
+def menu(choices, before_run_function=None, after_run_function=None, skip_to_next_page=True):
     """
     Console Menu that accepts choices and corresponding functions to call.
     The user must press the same button twice: once to see their choice highlited,
@@ -151,14 +151,14 @@ if __name__ == "__main__":
         global choices
         global menu
         current_options += 1
-        menu(choices[current_options], before_run_function=griffy.start_tone(), after_run_function=None)
+        menu(choices[current_options], before_run_function=None, after_run_function=None)
     
     def back():
         global current_options
         global choices
         global menu
         current_options -= 1
-        menu(choices[current_options], before_run_function=griffy.start_tone(), after_run_function=None)
+        menu(choices[current_options], before_run_function=None, after_run_function=None)
 
     def before(mission_name):
         missions.start_tone
@@ -180,9 +180,9 @@ if __name__ == "__main__":
         "right": ("M6", missions.sixth_run),
         "left": ("M4", missions.fourth_run),
         "down": ("BACK", back),
-        "enter": ("OFF", missions.off)
+        "enter": ("M7", missions.seventh_run)
     }
     
     choices = [CHOICES,CHOICES1]
 
-    menu(choices[current_options], before_run_function=griffy.start_tone(), after_run_function=None)
+    menu(choices[current_options], before_run_function=None, after_run_function=None)
