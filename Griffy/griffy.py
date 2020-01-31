@@ -87,11 +87,22 @@ class Griffy(MoveDifferential):
         return inches * 25.4
 
     def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
-        """
-        Squares the robot to the line using the 
-        selected speed 'speed' and the constant intensities
-        """
-        pass
+        '''
+        Squares the robit with a line using the provided `black_light_intensity` and `white_light_intesity`.
+        '''
+        while True:
+            self.left_large_motor.on(speed=SpeedPercent(speed))
+            self.right_large_motor.on(speed)
+            if self.right_color_sensor.reflected_light_intensity == 1:
+                self.right_large_motor.off()
+            elif self.left_color_sensor.reflected_light_intensity == 1:
+                self.left_large_motor.off()
+            elif self.right_color_sensor.reflected_light_intensity == 6: 
+                self.right_large_motor.on(speed = SpeedPercent(5))
+            elif self.right_color_sensor.reflected_light_intensity == 6:
+                self.left_large_motor.on(speed = SpeedPercent(5))
+            elif self.right_color_sensor.reflected_light_intensity == 1 and self.left_color_sensor.reflected_light_intensity == 1:
+                break
 
     def choose_color_sensor(self, which_color_sensor='right'):
         """
