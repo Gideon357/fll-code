@@ -1,7 +1,6 @@
 #!/usr/bin/env micropython
 
 from .griffy import Griffy
-from .button import Button
 from ev3dev2.motor import SpeedPercent
 from sys import stderr
 from ev3dev2.button import Button
@@ -60,29 +59,41 @@ class Missions(Griffy):
     
     def sixth_run(self):
         """Broken building elevator and swing: Jig"""
+        
+        self.left_medium_motor.on_for_rotations(100, .0001)
+        self.on_for_distance(30, 26)
+        self.left_medium_motor.on_for_rotations(25, .35)
+        sleep(1)
+        self.on_for_distance(30, 15)
+        self.move_tank.on_for_rotations(20, -20, .035)
+        self.on_for_distance(30, 5.5)
+        self.move_tank.on_for_rotations(-20, 20, .14)
+        self.move_tank.on_for_rotations(20, -20, .14)
+        self.on_for_distance(-30, 6)
+
         # 90 degrees is `self.in_to_mm(1.8), self.in_to_mm(3.5)`
-        self.left_medium_motor.on_for_rotations(-80, .2) # Turn attachment
-        sleep(.5)
-        self.move_tank.on_for_rotations(SpeedPercent(-25), 25, .109) # Turn to the left
-        self.on_for_distance(SpeedPercent(50), 38) # Go to the beige circle
-        self.left_medium_motor.on_for_seconds(10, 0.57) # Turn attachment
-        self.on_for_distance(SpeedPercent(-20), 5.5) # Backup from the houses we put
-        self.move_tank.on_for_rotations(25, -25, .18) # Turn past the houses
-        self.left_medium_motor.on_for_seconds(-50, 0.9) # Turn attachment
-        sleep(1)
-        self.on_for_distance(SpeedPercent(60), 13.5) # Go forward 13.5 inches
-        sleep(1)
-        self.on_for_distance(SpeedPercent(30), 3) # Go forward 3 inches
-        self.move_tank.on_for_rotations(15, -15, .14) # Turn to the right
-        self.move_tank.on_for_rotations(-15, 15, .14) # Turn to the left
-        self.on_for_distance(SpeedPercent(-20), 4) # Back up
-        self.left_medium_motor.on_for_rotations(75, .32) # Turn attachment
-        self.move_tank.on_for_rotations(25, -25, .349) # Turn to the right
-        self.on_for_distance(SpeedPercent(30), 8.5) # Go forward to swing
-        self.move_tank.on_for_rotations(-25, 25, .2) # Turn to the left
-        self.on_for_distance(SpeedPercent(-30), 7) # Go backward from swing
-        self.move_tank.on_for_rotations(-25, 25, .29) # Turn to the left
-        self.on_for_distance(-80, 60) # Go 60 inches backwards, arriving home
+        # self.left_medium_motor.on_for_rotations(-80, .2) # Turn attachment
+        # sleep(.5)
+        # self.move_tank.on_for_rotations(SpeedPercent(-25), 25, .109) # Turn to the left
+        # self.on_for_distance(SpeedPercent(50), 38) # Go to the beige circle
+        # self.left_medium_motor.on_for_seconds(10, 0.57) # Turn attachment
+        # self.on_for_distance(SpeedPercent(-20), 5.5) # Backup from the houses we put
+        # self.move_tank.on_for_rotations(25, -25, .18) # Turn past the houses
+        # self.left_medium_motor.on_for_seconds(-50, 0.9) # Turn attachment
+        # sleep(1)
+        # self.on_for_distance(SpeedPercent(60), 13.5) # Go forward 13.5 inches
+        # sleep(1)
+        # self.on_for_distance(SpeedPercent(30), 3) # Go forward 3 inches
+        # self.move_tank.on_for_rotations(15, -15, .14) # Turn to the right
+        # self.move_tank.on_for_rotations(-15, 15, .14) # Turn to the left
+        # self.on_for_distance(SpeedPercent(-20), 4) # Back up
+        # self.left_medium_motor.on_for_rotations(75, .32) # Turn attachment
+        # self.move_tank.on_for_rotations(25, -25, .349) # Turn to the right
+        # self.on_for_distance(SpeedPercent(30), 8.5) # Go forward to swing
+        # self.move_tank.on_for_rotations(-25, 25, .2) # Turn to the left
+        # self.on_for_distance(SpeedPercent(-30), 7) # Go backward from swing
+        # self.move_tank.on_for_rotations(-25, 25, .29) # Turn to the left
+        # self.on_for_distance(-80, 60) # Go 60 inches backwards, arriving home
         
     def seventh_run(self):
         """Ramp: Jig """

@@ -1,13 +1,12 @@
+from ev3dev2.button import Button
 from ev3dev2.console import Console
-from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, MoveSteering
+from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, MoveSteering, follow_for_ms
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
 from ev3dev2.wheel import EV3Tire
 from sys import stderr
 from time import sleep
-from .button import Button
-
 
 # Config setting for Griffy
 LEFT_MEDIUM_MOTOR_PORT = OUTPUT_A
@@ -16,7 +15,7 @@ RIGHT_LARGE_MOTOR_PORT = OUTPUT_C
 RIGHT_MEDIUM_MOTOR_PORT = OUTPUT_D
 STUD_MM = 7
 WHEEL_CLASS = EV3Tire
-WHEEL_CIRCUMFERENCE = 17.9
+WHEEL_CIRCUMFERENCE = 176
 WHEEL_DISTANCE = STUD_MM * 11 # Center of wheels are 11 studs apart
 LEFT_GYRO_SENSOR_INPUT = INPUT_1
 LEFT_COLOR_SENSOR_INPUT = INPUT_2
@@ -46,6 +45,7 @@ class Griffy(MoveDifferential):
         """
         super().__init__(LEFT_LARGE_MOTOR_PORT, RIGHT_LARGE_MOTOR_PORT, WHEEL_CLASS, WHEEL_DISTANCE)
         self.debug_on = debug_on
+        self.debug('Griffy started!')
         error = self.set_up_sensors_motors()
         if not error is None:
             # wait until user exits program!!
@@ -222,18 +222,17 @@ class Griffy(MoveDifferential):
         """
         self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=False, kp=0.6, ki=0.5, kd=0.6, target=0):
+    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=False, target=0):
         """
         Drives for a certain distance
         and has a toglable gyro feature
-        HIGHLY SUGGESTED TO NOT CHANGE K VALUES
-        TODO: Define Parameters so people know what they are for
-        TODO: Explain gyro algorithm
-
         ``speed`` can be a percentage or a :class:`ev3dev2.motor.SpeedValue`
         object, enabling use of other units.
         """
         # self.reset()
+        kp = 0.6
+        ki = 0.7
+        kd = 0.5
         distance_mm = self.in_to_mm(distance_in)
         if use_gyro:
             gyro = self.right_gyro_sensor
@@ -248,12 +247,8 @@ class Griffy(MoveDifferential):
             speed_native_units = self.left_motor._speed_native_units(speed)
             integral = 0.0 # integral is the sum of all errors
             last_error = 0.0 # last_error stores the last error through the while loop
-            derivative = 0.0  # derivative is the rate at which the error is changing
-            # rotations = distance_mm / self.wheel_circumference
-            # degrees = 360 * rotations
-            # self.left_large_motor.reset()
-            # self.right_large_motor.reset()        
-            while True:
+            derivative = 0.0  # derivative is the rate at which the error is changing      
+            while self.follow_for_distance(distance_in, speed):
                 #error = target - gyro.angle - reset_angle
                 error = gyro.angle - reset_angle
                 integral = integral + error
@@ -267,3 +262,31 @@ class Griffy(MoveDifferential):
                 self.sleep_in_loop(0.01)
         else:
             super().on_for_distance(speed, distance_mm, brake, block)
+            
+    def line_follow(self, speed:int, distance_in, which_color_sensor='right'):
+        cs = self.choose_color_sensor(which_color_sensor)
+        average = (self.white_light_intensity + self.black_light_intensity) / 2
+        while self.follow_for_distance(distance_in, speed):
+            if cs.reflected_light_intensity > average:
+                self.move_tank.on(speed - 8, speed + 8)
+            elif cs.reflected_light_intensity < average:
+                self.move_tank.on(speed + 8, speed - 8)
+            self.debug("White Light Intensity: {}, Black Light Intensity: {}, Average Light Intensity: {}".format(self.white_light_intensity, self.black_light_intensity, average))
+
+    def follow_for_distance(self, distance_in, speed):
+        """
+       Measures the current position of the left large motor and
+       Compares it to the desired position
+       If less, returns False
+       If equal or more, returns True
+        """
+        rotations = self.in_to_mm(distance_in) / self.wheel_circumference
+        degrees = 360 * rotations
+        left_current = self.left_large_motor.position
+        self.debug("Current Position: {} vs Desired Position: {}".format(left_current, degrees))
+        left_rotations = (left_current / self.left_motor.count_per_rot)
+        left_degrees = left_rotations * 360
+        if left_degrees < degrees:
+            return True
+        elif left_degrees >= degrees:
+            return False

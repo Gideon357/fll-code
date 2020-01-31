@@ -1,5 +1,4 @@
 #!/usr/bin/env micropython
-# TODO: log that on 9/14 we figured out micropython didn't support a default _state in buttons missing _state
 # TODO: add screen feedback listing motors (A, B, C, D)
 
 from ev3dev2.motor import LargeMotor, MediumMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, list_motors, Motor
@@ -7,7 +6,7 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
-from Griffy.button import Button
+from ev3dev2.button import Button
 from time import sleep
 
 motor_a = MediumMotor(OUTPUT_A)
