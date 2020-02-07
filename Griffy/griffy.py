@@ -53,6 +53,7 @@ class Griffy(MoveDifferential):
             self.error_tone()
             while True:
                 self.sleep_in_loop()
+        self.calibrate_gyro(which_gyro_sensor='right')
         
         self.wheel_circumference = WHEEL_CIRCUMFERENCE
         self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
@@ -86,23 +87,23 @@ class Griffy(MoveDifferential):
     def in_to_mm(self, inches):
         return inches * 25.4
 
-    def line_square(self, speed, black_light_intensity=BLACK_LIGHT_INTENSITY, white_light_intensity=WHITE_LIGHT_INTENSITY):
+    def line_square(self, speed):
         '''
-        Squares the robit with a line using the provided `black_light_intensity` and `white_light_intesity`.
+        Squares the robot with a line using the provided `black_light_intensity` and `white_light_intesity`.
         '''
-        while True:
-            self.left_large_motor.on(speed=SpeedPercent(speed))
-            self.right_large_motor.on(speed)
-            if self.right_color_sensor.reflected_light_intensity == 1:
-                self.right_large_motor.off()
-            elif self.left_color_sensor.reflected_light_intensity == 1:
-                self.left_large_motor.off()
-            elif self.right_color_sensor.reflected_light_intensity == 6: 
-                self.right_large_motor.on(speed = SpeedPercent(5))
-            elif self.right_color_sensor.reflected_light_intensity == 6:
-                self.left_large_motor.on(speed = SpeedPercent(5))
-            elif self.right_color_sensor.reflected_light_intensity == 1 and self.left_color_sensor.reflected_light_intensity == 1:
-                break
+        # while True:
+        #     self.left_large_motor.on(speed=SpeedPercent(speed))
+        #     self.right_large_motor.on(speed)
+        #     if self.right_color_sensor.reflected_light_intensity == 1:
+        #         self.right_large_motor.off()
+        #     elif self.left_color_sensor.reflected_light_intensity == 1:
+        #         self.left_large_motor.off()
+        #     elif self.right_color_sensor.reflected_light_intensity == 6: 
+        #         self.right_large_motor.on(speed = SpeedPercent(5))
+        #     elif self.right_color_sensor.reflected_light_intensity == 6:
+        #         self.left_large_motor.on(speed = SpeedPercent(5))
+        #     elif self.right_color_sensor.reflected_light_intensity == 1 and self.left_color_sensor.reflected_light_intensity == 1:
+        #         break
 
     def choose_color_sensor(self, which_color_sensor='right'):
         """
@@ -112,6 +113,15 @@ class Griffy(MoveDifferential):
             return self.right_color_sensor
         else:
             return self.left_color_sensor
+
+    def choose_gyro_sensor(self, which_gyro_sensor='right'):
+        """
+        Returns the gyro sensor based on argument
+        """
+        if which_gyro_sensor == 'right':
+            return self.right_gyro_sensor
+        else:
+            return self.left_gyro_sensor
 
     def write_to_console(self, msg:str, column:int, row:int, reset_console=True, inverse=False, alignment='L', font_size='M'):
         """Write msg to console at column, and row
@@ -187,6 +197,7 @@ class Griffy(MoveDifferential):
             self.cs = self.left_color_sensor
             self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
             self.right_gyro_sensor = GyroSensor(RIGHT_GYRO_SENSOR_INPUT)
+            self.gyro = self.right_gyro_sensor
             self.right_color_sensor = ColorSensor(RIGHT_COLOR_SENSOR_INPUT)
             self.left_medium_motor = MediumMotor(LEFT_MEDIUM_MOTOR_PORT)
             self.right_medium_motor = MediumMotor(RIGHT_MEDIUM_MOTOR_PORT)
@@ -233,7 +244,19 @@ class Griffy(MoveDifferential):
         """
         self.attachment_tank.on_for_rotations(speed, -speed, rotations)
 
-    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=False, target=0):
+    def calibrate_gyro(self, which_gyro_sensor="right"):
+        """
+        Calibrates the gyro sensor.
+        NOTE: This takes 1sec to run
+        """
+        #assert self._gyro, "GyroSensor must be defined"
+        gyro = self.choose_gyro_sensor(which_gyro_sensor)
+        for _ in range(2):
+            gyro.mode = 'GYRO-RATE'
+            gyro.mode = 'GYRO-ANG'
+            sleep(0.5)
+
+    def on_for_distance(self, speed:int, distance_in:int, brake=True, block=True, use_gyro=False, target=0, which_gyro_sensor="right"):
         """
         Drives for a certain distance
         and has a toglable gyro feature
@@ -241,17 +264,24 @@ class Griffy(MoveDifferential):
         object, enabling use of other units.
         """
         # self.reset()
-        kp = 0.6
-        ki = 0.7
-        kd = 0.5
+        
+        # values from ev3dev2 source
+        #kp = 11.3
+        #ki = 0.05
+        #kd = 3.2
+
+        kp = 11.3
+        ki = 9
+        kd = 3.2
+        
         distance_mm = self.in_to_mm(distance_in)
         if use_gyro:
-            gyro = self.right_gyro_sensor
+            gyro = self.choose_gyro_sensor(which_gyro_sensor)
             gyro.mode = gyro.MODE_GYRO_ANG
             # there is currently a bug in gyro.reset() method so instead we just read the current
             # angle and then compare to that
-            # gyro.reset()
-            reset_angle = gyro.angle
+            gyro.reset()
+            # reset_angle = gyro.angle
             self.debug("GYRO ANGLE BEFORE LOOP: {}".format(gyro.angle))
             
             # convert speed to a SpeedValue if not already
@@ -260,8 +290,8 @@ class Griffy(MoveDifferential):
             last_error = 0.0 # last_error stores the last error through the while loop
             derivative = 0.0  # derivative is the rate at which the error is changing      
             while self.follow_for_distance(distance_in, speed):
-                #error = target - gyro.angle - reset_angle
-                error = gyro.angle - reset_angle
+                # error = gyro.angle - reset_angle # OLD CODE BEFORE GYRO.RESET FIXED
+                error = gyro.angle - target
                 integral = integral + error
                 derivative = error - last_error
                 last_error = error
@@ -274,15 +304,31 @@ class Griffy(MoveDifferential):
         else:
             super().on_for_distance(speed, distance_mm, brake, block)
             
-    def line_follow(self, speed:int, distance_in, which_color_sensor='right'):
+    def line_follow(self, speed:int, distance_in, which_color_sensor='right', brake=True, block=True):
         cs = self.choose_color_sensor(which_color_sensor)
-        average = (self.white_light_intensity + self.black_light_intensity) / 2
+        integral = 0.0
+        last_error = 0.0
+        derivative = 0.0
+        
+        kp = 0.2   
+        ki = 3
+        kd = 0.2
+        
+        target_light_intensity = self.black_light_intensity
+        speed_native_units = self.left_motor._speed_native_units(speed)
         while self.follow_for_distance(distance_in, speed):
-            if cs.reflected_light_intensity > average:
-                self.move_tank.on(speed - 8, speed + 8)
-            elif cs.reflected_light_intensity < average:
-                self.move_tank.on(speed + 8, speed - 8)
-            self.debug("White Light Intensity: {}, Black Light Intensity: {}, Average Light Intensity: {}".format(self.white_light_intensity, self.black_light_intensity, average))
+            reflected_light_intensity = cs.reflected_light_intensity
+            error = target_light_intensity - reflected_light_intensity
+            integral = integral + error
+            derivative = error - last_error
+            last_error = error
+            turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
+            left_speed = SpeedNativeUnits(speed_native_units - turn_native_units)
+            right_speed = SpeedNativeUnits(speed_native_units + turn_native_units)
+
+            self.debug("target_light_intensity: {}, error: {}, integral: {}, derivative: {}, last_error: {}, turn_native_units: {}, left_speed: {}, right_speed: {}".format(target_light_intensity, error, integral, derivative, last_error, turn_native_units, left_speed, right_speed))
+
+            self.on(left_speed, right_speed)
 
     def follow_for_distance(self, distance_in, speed):
         """
@@ -291,13 +337,21 @@ class Griffy(MoveDifferential):
        If less, returns False
        If equal or more, returns True
         """
-        rotations = self.in_to_mm(distance_in) / self.wheel_circumference
-        degrees = 360 * rotations
+        # if this is the first time during this follow_for_distance run that we are calling this function
+        # store the total distance that the robot will run in self.follow_distance_degrees
+        if not hasattr(self, "target_degrees"): # pylint: disable=access-member-before-definition
+            rotations = self.in_to_mm(distance_in) / self.wheel_circumference
+            # target degrees is current position + additional rotations * 360
+            self.target_degrees = self.left_large_motor.position + (360 * rotations)
+    
         left_current = self.left_large_motor.position
-        self.debug("Current Position: {} vs Desired Position: {}".format(left_current, degrees))
         left_rotations = (left_current / self.left_motor.count_per_rot)
         left_degrees = left_rotations * 360
-        if left_degrees < degrees:
+        self.debug("Current Degrees: {} vs Desired Degrees: {}".format(left_degrees, self.target_degrees))
+
+        if left_degrees < self.target_degrees:
             return True
-        elif left_degrees >= degrees:
+        else:
+            # reset follow_for_distance method by removing target_degrees attribute
+            delattr(self, "target_degrees")
             return False
