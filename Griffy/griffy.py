@@ -5,6 +5,7 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import GyroSensor, ColorSensor
 from ev3dev2.sound import Sound
 from ev3dev2.wheel import EV3Tire
+from ev3dev2.led import Leds
 from sys import stderr
 from time import sleep
 
@@ -23,6 +24,7 @@ RIGHT_COLOR_SENSOR_INPUT = INPUT_3
 RIGHT_GYRO_SENSOR_INPUT = INPUT_4
 WHITE_LIGHT_INTENSITY = 44
 BLACK_LIGHT_INTENSITY = 8
+LINE_SQUARE_INTENSITY = 26
 INCHES_TO_MILIMETERS = 25.4
 LIGHTFILE = "/home/robot/light.txt"
 
@@ -37,7 +39,7 @@ class Griffy(MoveDifferential):
     Missions
     """
 
-    def __init__(self, debug_on=True, light_from_file=False):
+    def __init__(self, debug_on=True, light_from_file=True):
         """
         Initalize a griffy class which is based
         on move differential. Also set up the medium motors
@@ -60,6 +62,7 @@ class Griffy(MoveDifferential):
         self.move_tank = MoveTank(OUTPUT_B, OUTPUT_C)
         self.white_light_intensity = WHITE_LIGHT_INTENSITY
         self.black_light_intensity = BLACK_LIGHT_INTENSITY
+        self.line_square_intensity = LINE_SQUARE_INTENSITY
         if light_from_file:
             self.read_light_from_file()
         self.start_tone() # A sound at the end to show when it is done.
@@ -87,23 +90,82 @@ class Griffy(MoveDifferential):
     def in_to_mm(self, inches):
         return inches * 25.4
 
-    def line_square(self, speed):
+    def set_led(self, color='GREEN'):
+        self.leds.set_color('LEFT', color)
+        self.leds.set_color('RIGHT', color)
+
+    def line_square(self, speed, which_algo='rough'):
         '''
-        Squares the robot with a line using the provided `black_light_intensity` and `white_light_intesity`.
+        Two options for line squaring:
+        option 1: Squares the robot with a line using the provided `black_light_intensity`
+                  and `white_light_intesity`.
+        option 2: Squares using alternative line squaring algorithm
         '''
-        # while True:
-        #     self.left_large_motor.on(speed=SpeedPercent(speed))
-        #     self.right_large_motor.on(speed)
-        #     if self.right_color_sensor.reflected_light_intensity == 1:
-        #         self.right_large_motor.off()
-        #     elif self.left_color_sensor.reflected_light_intensity == 1:
-        #         self.left_large_motor.off()
-        #     elif self.right_color_sensor.reflected_light_intensity == 6: 
-        #         self.right_large_motor.on(speed = SpeedPercent(5))
-        #     elif self.right_color_sensor.reflected_light_intensity == 6:
-        #         self.left_large_motor.on(speed = SpeedPercent(5))
-        #     elif self.right_color_sensor.reflected_light_intensity == 1 and self.left_color_sensor.reflected_light_intensity == 1:
-        #         break
+        if which_algo == 'loop':
+            while True:
+                self.left_large_motor.on(speed=SpeedPercent(speed))
+                self.right_large_motor.on(speed)
+                if self.right_color_sensor.reflected_light_intensity == 1:
+                    self.right_large_motor.off()
+                elif self.left_color_sensor.reflected_light_intensity == 1:
+                    self.left_large_motor.off()
+                elif self.right_color_sensor.reflected_light_intensity == 6: 
+                    self.right_large_motor.on(speed = SpeedPercent(5))
+                elif self.right_color_sensor.reflected_light_intensity == 6:
+                    self.left_large_motor.on(speed = SpeedPercent(5))
+                elif self.right_color_sensor.reflected_light_intensity == 1 and self.left_color_sensor.reflected_light_intensity == 1:
+                    break
+        elif which_algo == 'fine':
+            # square using fine adjustments
+            # generally to be used after a rought adjustments
+            # TODO: turn LED to TK so we know we're fine adjusting
+            # TODO: only loop for max_seconds
+            while True:
+                # first the left sensor and motor
+                if self.left_color_sensor.reflected_light_intensity < self.line_square_intensity:
+                    # Griffy too far forward, move backwards
+                    self.left_large_motor.on(-speed)
+                elif self.left_color_sensor.reflected_light_intensity > self.line_square_intensity:
+                    # Griffy too gar back, move forward
+                    self.left_large_motor.on(speed)
+                else:
+                    # we are there, turn off left motor and idle
+                    self.left_large_motor.off()
+                    break
+            while True:
+                # next the right sendors and motor
+                if self.right_color_sensor.reflected_light_intensity < self.line_square_intensity:
+                    # Griffy too far forward, move backwards
+                    self.right_large_motor.on(-speed)
+                elif self.right_color_sensor.reflected_light_intensity > self.line_square_intensity:
+                    # Griffy too far back, move forward
+                    self.right_large_motor.on(speed)
+                else:
+                    # we are there, turn off left motor and idle
+                    self.right_large_motor.off()
+                    break
+        elif which_algo == 'rough':
+            self.on(speed, speed)
+            while self.right_color_sensor.reflected_light_intensity > self.black_light_intensity\
+                    and self.left_color_sensor.reflected_light_intensity > self.black_light_intensity:
+                self.debug('left light intensity: {}, right light intensity: {}'.format\
+                (self.left_color_sensor.reflected_light_intensity, self.right_color_sensor.reflected_light_intensity))
+            if self.right_color_sensor.reflected_light_intensity <= self.black_light_intensity:
+                self.right_large_motor.off()
+                self.debug('shutting right motor')
+                while self.left_color_sensor.reflected_light_intensity > self.black_light_intensity:
+                    self.debug('left light intensity: {}, right light intensity: {}'.format\
+                (self.left_color_sensor.reflected_light_intensity, self.right_color_sensor.reflected_light_intensity))
+                self.left_large_motor.off()
+                self.debug('shutting left motor')
+            else:
+                self.left_large_motor.off()
+                self.debug('shutting left motor')
+                while self.right_color_sensor.reflected_light_intensity > self.black_light_intensity:
+                    self.debug('left light intensity: {}, right light intensity: {}'.format\
+                (self.left_color_sensor.reflected_light_intensity, self.right_color_sensor.reflected_light_intensity))
+                self.right_large_motor.off()
+                self.debug('shutting right motor')
 
     def choose_color_sensor(self, which_color_sensor='right'):
         """
@@ -152,10 +214,12 @@ class Griffy(MoveDifferential):
         cs.MODE_COL_REFLECT = 'COL-REFLECT'
         btn = Button()
         light = cs.reflected_light_intensity
-        while not btn.any():
+        while True: 
             self.write_to_console(str(light), column=5, row=2, reset_console=True, inverse=(not read_white), alignment='C', font_size='L')
             light = cs.reflected_light_intensity
             self.sleep_in_loop()
+            if btn.any():
+                break
         return light
 
     def write_light_to_file(self, filename=LIGHTFILE):
@@ -164,14 +228,21 @@ class Griffy(MoveDifferential):
         """
         self.debug(filename)
         white = self.read_from_color_sensor(read_white=True)
+        self.start_tone()
+        self.debug('White: {}'.format(white))
         black = self.read_from_color_sensor(read_white=False)
+        self.start_tone()
+        self.debug('Black: {}'.format(black))
+        line = self.read_from_color_sensor(read_white=True)
+        self.start_tone()
+        self.debug('Line: {}'.format(line))
         with open(filename, 'w') as f:
-            print("{} {}".format(white, black), file=f)
+            print("{} {} {}".format(white, black, line), file=f)
 
     def read_light_from_file(self, filename=LIGHTFILE):
         """
         Reads from light.txt and returns the white
-        and black values as a tuple
+        and black and line values as a tuple
         If error, catch exception, debug.print it, and return None
         """
         try:
@@ -180,10 +251,12 @@ class Griffy(MoveDifferential):
             values = line1.split(" ")
             white = values[0].strip() # Removes \n if it exists
             black = values[1].strip() # Removes \n if it exists
-            self.debug("Returning white and black values: ({}, {})".format(white, black))
-            self.white_light_intensity = white
-            self.black_light_intensity = black
-            return (white, black)
+            line = values[2].strip() # Removes \n if it exists
+            self.debug("Returning white and black and line values: ({}, {}, {})".format(white, black, line))
+            self.white_light_intensity = int(white)
+            self.black_light_intensity = int(black) # Stores values as integers
+            self.line_square_intensity = int(line)
+            return (white, black, line)
         except Exception as e:
             self.debug("Error reading light: {}".format(e))
             return None
@@ -193,6 +266,7 @@ class Griffy(MoveDifferential):
         Creates all sensors and motors or returns None or the error
         """
         try:
+            self.leds = Leds()
             self.left_color_sensor = ColorSensor(LEFT_COLOR_SENSOR_INPUT)
             self.cs = self.left_color_sensor
             self.left_gyro_sensor = GyroSensor(LEFT_GYRO_SENSOR_INPUT)
@@ -227,16 +301,17 @@ class Griffy(MoveDifferential):
         drives at `SpeedPercent(speed)` until white `white_light_intensity`
         then black 'black_light_intensity' 
         with chosen color sensor `which_color_sensor`
-        TODO: add gyro support
+        TODO: Fix drive_until_white_black
         """
         cs = self.choose_color_sensor(which_color_sensor)
         cs.MODE_COL_REFLECT = 'COL-REFLECT'
         self.on(SpeedPercent(speed), SpeedPercent(speed))
-        while cs.reflected_light_intensity <= self.white_light_intensity:
+        while cs.reflected_light_intensity < self.white_light_intensity:
+            self.debug('reflected light intensity: {}'.format(cs.reflected_light_intensity))
             self.sleep_in_loop()
         while cs.reflected_light_intensity >= self.black_light_intensity:
             self.sleep_in_loop()
-        self.off()
+        self.move_tank.off()
     
     def attachment_raise_lower(self, speed:int, rotations:int):
         """
@@ -271,11 +346,12 @@ class Griffy(MoveDifferential):
         #kd = 3.2
 
         kp = 11.3
-        ki = 9
+        ki = 2
         kd = 3.2
         
         distance_mm = self.in_to_mm(distance_in)
         if use_gyro:
+            self.set_led('AMBER')
             gyro = self.choose_gyro_sensor(which_gyro_sensor)
             gyro.mode = gyro.MODE_GYRO_ANG
             # there is currently a bug in gyro.reset() method so instead we just read the current
@@ -298,12 +374,16 @@ class Griffy(MoveDifferential):
                 turn_native_units = (kp * error) + (ki * integral) + (kd * derivative)
                 left_speed = SpeedNativeUnits(speed_native_units - turn_native_units)
                 right_speed = SpeedNativeUnits(speed_native_units + turn_native_units)
-                self.debug("error: {}, integral: {}, derivative: {}, last_error: {}, turn_native_units: {}, left_speed: {}, right_speed: {}".format(error, integral, derivative, last_error, turn_native_units, left_speed, right_speed))
+                self.debug("error: {}, integral: {}, derivative: {}, last_error: {},\
+                turn_native_units: {}, left_speed: {}, right_speed: {}".format\
+                (error, integral, derivative, last_error, turn_native_units, left_speed, right_speed))
                 self.on(left_speed, right_speed)
                 self.sleep_in_loop(0.01)
         else:
             super().on_for_distance(speed, distance_mm, brake, block)
-            
+
+        self.set_led()
+
     def line_follow(self, speed:int, distance_in, which_color_sensor='right', brake=True, block=True):
         cs = self.choose_color_sensor(which_color_sensor)
         integral = 0.0
