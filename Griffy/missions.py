@@ -53,33 +53,33 @@ class Missions(Griffy):
 
     def fifth_run(self):
         """Self Structure: Aim"""
-        self.on_for_distance(100, 11)
-        self.on_for_distance(-100, 11)
-        self.move_tank.on_for_rotations(100, -100, .27)
-        self.on_for_distance(-100, 20)
+        self.on_for_distance(100, 11) # Go forward to circle
+        self.on_for_distance(-100, 11) # Back up from circle
+        self.move_tank.on_for_rotations(100, -100, .27) # Turn right
+        self.on_for_distance(-100, 20) # Back up to wall
     
     def sixth_run(self):
         """Broken building elevator and swing: Jig"""
-        self.on_for_distance(50, 60, use_gyro=True)
-        self.move_tank.on_for_rotations(-8, 8, .2)
-        self.move_tank.on_for_rotations(8, -8, .2)
-        self.on_for_distance(-30, 12)
-        self.on_for_distance(30, 12)
-        self.on_for_distance(-30, 12)
-        self.move_tank.on_for_rotations(-8, 8, .225)
-        self.left_medium_motor.on_for_rotations(30, .56)
-        self.on_for_distance(50, 11.5)
-        self.on_for_distance(-10, 10)
-        self.move_tank.on_for_rotations(8, -8, .22)
-        self.on_for_distance(-100, 50)
-        self.left_medium_motor.on_for_rotations(-30, .45)
+        self.on_for_distance(50, 60, use_gyro=True) # Go forward 60 inches using the PID gyro algorthm
+        self.move_tank.on_for_rotations(-8, 8, .2) # Turn left
+        self.move_tank.on_for_rotations(8, -8, .2) # Turn right
+        self.on_for_distance(-30, 12) # Back up
+        self.on_for_distance(30, 12) # Go again to double check the swing
+        self.on_for_distance(-30, 12) # Back up
+        self.move_tank.on_for_rotations(-8, 8, .225) # Turn to elevator
+        self.left_medium_motor.on_for_rotations(30, .56) # Turn attachment
+        self.on_for_distance(50, 11.5) # Go and hit over evelator
+        self.on_for_distance(-10, 10) # Slowly back up
+        self.move_tank.on_for_rotations(8, -8, .22) # Turn right
+        self.on_for_distance(-100, 50) # Go home
+        self.left_medium_motor.on_for_rotations(-30, .45) # Turn attachment
         
     def seventh_run(self):
         """Ramp: Jig """
-        self.on_for_distance(30, 43, use_gyro=True) # Go forward 34.8 inches to align with the bridge
-        self.on_for_distance(-20, 8)
-        self.line_square(20)
-        self.line_square(20, which_algo='fine')
-        self.on_for_distance(20, 2)
-        self.move_tank.on_for_rotations(-15, 15, .52) # Turn to the right
-        self.on_for_distance(60, 24, use_gyro=True) # Go backward 21.2 inches, getting up the bridge
+        self.on_for_distance(30, 43, use_gyro=True) # Go forward 43 inches to drop off cubes
+        self.on_for_distance(-20, 8) # Back up
+        self.line_square(20) # Line square roughly
+        self.line_square(20, which_algo='fine') # Fine line square
+        self.on_for_distance(20, 2) # Go forward 2 inches
+        self.move_tank.on_for_rotations(-15, 15, .52) # Turn to the left
+        self.on_for_distance(60, 24, use_gyro=True) # Go 24 inches, getting up the bridge
