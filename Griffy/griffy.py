@@ -1,3 +1,4 @@
+
 from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, MoveSteering, follow_for_ms
@@ -66,11 +67,13 @@ class Griffy(MoveDifferential):
         if light_from_file:
             self.read_light_from_file()
         self.start_tone() # A sound at the end to show when it is done.
+        self.speaker = Sound()
         # Set black and white in the init
 
     def debug(self, str):
         """Print to stderr the debug message ``str`` if self.debug is True."""
         if self.debug_on:
+            self.speaker.speak(str)
             print(str, file=stderr)
 
     def start_tone(self):
