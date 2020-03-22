@@ -173,14 +173,14 @@ if __name__ == "__main__":
         "right": ("M3", missions.third_run),
         "left": ("M1", missions.first_run),
         "down": ("NEXT", next),
-        "enter": ("OFF", missions.off)
+        "enter": ("M4", missions.fourth_run)
     }
     CHOICES1 = {
-        "up": ("M5", missions.fifth_run),
-        "right": ("M6", missions.sixth_run),
-        "left": ("M4", missions.fourth_run),
+        "up": ("M6", missions.sixth_run),
+        "right": ("M7", missions.seventh_run),
+        "left": ("M5", missions.fifth_run),
         "down": ("BACK", back),
-        "enter": ("M7", missions.seventh_run)
+        "enter": ("M8", missions.eighth_run)
     }
     
     choices = [CHOICES,CHOICES1]
