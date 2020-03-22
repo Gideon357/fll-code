@@ -87,32 +87,15 @@ sudo apt update && sudo apt install python3-ev3dev2 micropython-ev3dev2
 ```
 
 ### How to change EV3dev2 Hostname
-
+ 
 ```bash
-sudo nano /etc/hostname
+sudo nano /etc/hostname 
 ```
+The above command will allow you to use the nano editor to modify the hostname file.```sudo``` will request the sudo password, which is maker. In the nano editor, change the hostname on line 1
 
-root pass: maker
+To close the `nano` editor use <kbd>CTRL</kbd>+<kbd>O</kbd> to write out. Hit <kbd>enter</kbd> to confirm the title and then use <kbd>CTRL</kbd>+<kbd>X</kbd> to exit nano.
 
-change the hostname on line 1
-
-<kbd>CTRL</kbd>+<kbd>O</kbd>
-
-<kbd> enter </kbd>
-
-<kbd>CTRL</kbd>+<kbd>X</kbd>
-
-```bash
-sudo nano /etc/hosts
-```
-
-change "localhost" on the first line to the same hostname
-
-<kbd>CTRL</kbd>+<kbd>O</kbd>
-
-<kbd> enter </kbd>
-
-<kbd>CTRL</kbd>+<kbd>X</kbd>
+Then nano into /etc/host and do the same thing.
 
 ## List of Hostnames
 
