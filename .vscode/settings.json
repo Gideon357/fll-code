@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/nateschmelkin/.venvs/ev3dev2/bin/python3",
+    "python.pythonPath": "~/.venvs/ev3dev2/bin/python3",
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "[markdown]": {
