@@ -1,4 +1,5 @@
-#!/usr/bin/env micropython
+# TODO: fix font size after coming back from calibrate light or sensor reading, the robot reports a font but it's not correctly drawing that font
+
 from time import sleep
 from sys import stderr
 from os import listdir
@@ -103,6 +104,8 @@ class Menu():
             # display the menu of choices, but show the last choice in inverse
             console.reset_console()
             self.debug("Reset the display screen")
+            console.set_font('Lat15-TerminusBold24x12.psf.gz', True)
+            
             # store the currently selected menu page
             menu_page = self.menu_pages[self.current_page]
             # store the currently selected menu items

@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "~/.venvs/ev3dev2/bin/python3",
+    "python.pythonPath": "/Users/nateschmelkin/.venvs/ev3dev2/bin/python3",
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "[markdown]": {
@@ -8,7 +8,7 @@
     "markdownlint.config": {
         "MD033":false
     },
-    "ev3devBrowser.download.include": "**/*.*py",
+    "ev3devBrowser.download.include": "{**/*.*py,settings.json}",
     "ev3devBrowser.download.exclude": "{samples,Non-Mission Code}",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true

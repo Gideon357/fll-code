@@ -1,0 +1,8 @@
+{
+    "use_gyro":true,
+    "light_values": {
+        "white":60,
+        "black":60,
+        "line":60
+    }
+}

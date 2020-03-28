@@ -1,5 +1,3 @@
-#!/usr/bin/env micropython
-
 from .griffy import Griffy
 from ev3dev2.motor import SpeedPercent
 from sys import stderr

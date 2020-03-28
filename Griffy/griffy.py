@@ -1,4 +1,6 @@
 
+from .settings import Settings
+
 from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.motor import MediumMotor, LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, MoveDifferential, SpeedPercent, MoveTank, SpeedNativeUnits, Motor, MoveSteering, follow_for_ms
@@ -25,10 +27,10 @@ RIGHT_COLOR_SENSOR_INPUT = INPUT_3
 RIGHT_GYRO_SENSOR_INPUT = INPUT_4
 WHITE_LIGHT_INTENSITY = 44
 BLACK_LIGHT_INTENSITY = 8
-LINE_SQUARE_INTENSITY = 26
+LINE_LIGHT_INTENSITY = 26
 INCHES_TO_MILIMETERS = 25.4
-LIGHTFILE = "/home/robot/light.txt"
-
+USE_GYRO = True # Global constant to turn on and off gyro driving
+SETTINGSFILE = "/home/robot/griffy-dev2/settings.json"
 
 class Griffy(MoveDifferential):
     """
@@ -40,14 +42,15 @@ class Griffy(MoveDifferential):
     Missions
     """
 
-    def __init__(self, debug_on=True, light_from_file=True):
+    def __init__(self, debug_on=True, settings_file=SETTINGSFILE):
         """
         Initalize a griffy class which is based
         on move differential. Also set up the medium motors
         and all sensors.
         """
         super().__init__(LEFT_LARGE_MOTOR_PORT, RIGHT_LARGE_MOTOR_PORT, WHEEL_CLASS, WHEEL_DISTANCE)
-        self.debug_on = debug_on
+        self.settings = Settings(settings_file)
+        self.debug_on = self.settings.get('debug_on', debug_on)
         self.debug('Griffy started!')
         error = self.set_up_sensors_motors()
         if not error is None:
@@ -61,19 +64,15 @@ class Griffy(MoveDifferential):
         self.wheel_circumference = WHEEL_CIRCUMFERENCE
         self.attachment_tank = MoveTank(OUTPUT_A, OUTPUT_D, motor_class=MediumMotor)
         self.move_tank = MoveTank(OUTPUT_B, OUTPUT_C)
-        self.white_light_intensity = WHITE_LIGHT_INTENSITY
-        self.black_light_intensity = BLACK_LIGHT_INTENSITY
-        self.line_square_intensity = LINE_SQUARE_INTENSITY
-        if light_from_file:
-            self.read_light_from_file()
+        self.read_light_from_settings() # read light from settings files via Settings class
+        self.use_gyro = self.settings.get("use_gyro", USE_GYRO)
+    
         self.start_tone() # A sound at the end to show when it is done.
-        self.speaker = Sound()
         # Set black and white in the init
 
     def debug(self, str):
         """Print to stderr the debug message ``str`` if self.debug is True."""
         if self.debug_on:
-            self.speaker.speak(str)
             print(str, file=stderr)
 
     def start_tone(self):
@@ -170,6 +169,32 @@ class Griffy(MoveDifferential):
                 self.right_large_motor.off()
                 self.debug('shutting right motor')
 
+    def display_color_sensor(self, which_color_sensor):
+        """Display reflected light intensity of said sensor"""
+        cs = self.choose_color_sensor(which_color_sensor)
+        cs.MODE_COL_REFLECT = 'COL-REFLECT'
+        btn = Button()
+        light = cs.reflected_light_intensity
+        while True: 
+            self.write_to_console(str(light), column=5, row=2, reset_console=True, inverse=True, alignment='C', font_size='L')
+            light = cs.reflected_light_intensity
+            self.sleep_in_loop()
+            if btn.any():
+                break
+
+    def display_gyro_sensor(self, which_gyro_sensor):
+        """Display reflected light intensity of said sensor"""
+        gyro = self.choose_gyro_sensor(which_gyro_sensor)
+        gyro.mode = gyro.MODE_GYRO_ANG
+        btn = Button()
+        angle = gyro.angle
+        while True: 
+            self.write_to_console(str(angle), column=5, row=2, reset_console=True, inverse=True, alignment='C', font_size='L')
+            angle = gyro.angle
+            self.sleep_in_loop()
+            if btn.any():
+                break
+
     def choose_color_sensor(self, which_color_sensor='right'):
         """
         Returns the color sensor based on argument
@@ -225,11 +250,10 @@ class Griffy(MoveDifferential):
                 break
         return light
 
-    def write_light_to_file(self, filename=LIGHTFILE):
+    def write_light_to_settings(self):
         """
-        Writes white and black light values to file system
+        Writes white and black light values to settings file via Settings class
         """
-        self.debug(filename)
         white = self.read_from_color_sensor(read_white=True)
         self.start_tone()
         self.debug('White: {}'.format(white))
@@ -239,22 +263,22 @@ class Griffy(MoveDifferential):
         line = self.read_from_color_sensor(read_white=True)
         self.start_tone()
         self.debug('Line: {}'.format(line))
-        with open(filename, 'w') as f:
-            print("{} {} {}".format(white, black, line), file=f)
+        light_values = {'white': white, 'black': black, 'line': line}
+        
+        self.settings.settings['light_values'] = light_values
+        self.settings.write() # save to file
 
-    def read_light_from_file(self, filename=LIGHTFILE):
+    def read_light_from_settings(self):
         """
         Reads from light.txt and returns the white
         and black and line values as a tuple
         If error, catch exception, debug.print it, and return None
         """
         try:
-            with open(filename, 'r') as f:
-                line1 = f.readlines()[0]
-            values = line1.split(" ")
-            white = values[0].strip() # Removes \n if it exists
-            black = values[1].strip() # Removes \n if it exists
-            line = values[2].strip() # Removes \n if it exists
+            light_values = self.settings.get('light_values')
+            white = light_values.get('white', WHITE_LIGHT_INTENSITY)
+            black = light_values.get('black', BLACK_LIGHT_INTENSITY)
+            line = light_values.get('line', LINE_LIGHT_INTENSITY)
             self.debug("Returning white and black and line values: ({}, {}, {})".format(white, black, line))
             self.white_light_intensity = int(white)
             self.black_light_intensity = int(black) # Stores values as integers
@@ -263,6 +287,25 @@ class Griffy(MoveDifferential):
         except Exception as e:
             self.debug("Error reading light: {}".format(e))
             return None
+
+    def flip_boolean_setting(self, setting):
+        """Flip a boolean true/false setting named `settings`"""
+        btn = Button()
+        self.wait_for_button_press(btn)
+        # flip the gyro setting
+        self.settings.settings[setting] = not self.settings.get(setting)
+        self.settings.write()
+        return self.settings.get(setting)
+
+    def flip_gyro_sensor_setting(self):
+        """
+        Will show the value of the color sensor on the screen
+        and return when any button is pressed
+        """
+        return self.flip_boolean_setting('use_gyro')
+    
+    def flip_debug_setting(self):
+        return self.flip_boolean_setting('debug')
 
     def set_up_sensors_motors(self):
         """
@@ -393,11 +436,11 @@ class Griffy(MoveDifferential):
         last_error = 0.0
         derivative = 0.0
         
-        kp = 0.2   
-        ki = 3
-        kd = 0.2
+        kp = .5
+        ki = .1
+        kd = .1
         
-        target_light_intensity = self.black_light_intensity
+        target_light_intensity = self.line_square_intensity
         speed_native_units = self.left_motor._speed_native_units(speed)
         while self.follow_for_distance(distance_in, speed):
             reflected_light_intensity = cs.reflected_light_intensity
@@ -438,3 +481,20 @@ class Griffy(MoveDifferential):
             # reset follow_for_distance method by removing target_degrees attribute
             delattr(self, "target_degrees")
             return False
+
+    def wait_for_button_press(self, button):
+        """
+        Wait for a button to be pressed and released.
+        Parameter:
+        - `button` (Button): an instance of the EV3 Button() class
+        return the Button name that was pressed.
+        """
+        pressed = None
+        while True:
+            allpressed = button.buttons_pressed
+            if bool(allpressed):
+                pressed = allpressed[0]  # just get the first one
+                while not button.wait_for_released(pressed):
+                    pass
+                break
+        return pressed
