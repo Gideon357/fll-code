@@ -1,9 +1,10 @@
 #!/usr/bin/env micropython
 
-from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
+from ev3dev2.led import Leds
+from ev3dev2.motor import (OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, LargeMotor,
+                           MoveTank, SpeedPercent)
 from ev3dev2.sensor import INPUT_1
 from ev3dev2.sensor.lego import TouchSensor
-from ev3dev2.led import Leds
 
 tank_drive = MoveTank(OUTPUT_B, OUTPUT_C)
 

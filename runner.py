@@ -3,7 +3,7 @@ from Griffy.menu import Menu
 from Griffy.missions import Missions
 
 DEBUG_ON = True
-START_PAGE = 0 # which page of the menu to start on
+START_PAGE = 0  # which page of the menu to start on
 
 
 missions = Missions(debug_on=DEBUG_ON)
@@ -14,14 +14,14 @@ PAGE1 = {
     "right": ("M3", missions.third_run),
     "left": ("M1", missions.first_run),
     "down": ("NEXT", "next"),
-    "enter": ("M4", missions.fourth_run)
+    "enter": ("M4", missions.fourth_run),
 }
 PAGE2 = {
     "up": ("M6", missions.sixth_run),
     "right": ("M7", missions.seventh_run),
     "left": ("M5", missions.fifth_run),
     "down": ("BACK", "back"),
-    "enter": ("M8", missions.eighth_run)
+    "enter": ("M8", missions.eighth_run),
 }
 PAGES = [PAGE1, PAGE2]
 

@@ -1,11 +1,13 @@
 #!/usr/bin/env micropython
-from time import sleep
-from sys import stderr
 from os import listdir
+from sys import stderr
+from time import sleep
+
 from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.led import Leds
-from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4, list_sensors
+
 from Griffy.missions import Missions
 
 current_options = 0
@@ -17,6 +19,7 @@ Used to create a console menu for switching between programs quickly
 without having to return to Brickman to find and launch a program.
 Demonstrates the EV3DEV2 Console(), Led(), and Button() classes.
 """
+
 
 def get_positions(console):
     """
@@ -35,8 +38,9 @@ def get_positions(console):
         "right": ("R", console.columns, midrow),
         "down": ("C", midcol, console.rows),
         "left": ("L", 1, midrow),
-        "enter": ("C", midcol, midrow)
+        "enter": ("C", midcol, midrow),
     }
+
 
 def wait_for_button_press(button):
     """
@@ -55,7 +59,10 @@ def wait_for_button_press(button):
             break
     return pressed
 
-def menu(choices, before_run_function=None, after_run_function=None, skip_to_next_page=True):
+
+def menu(
+    choices, before_run_function=None, after_run_function=None, skip_to_next_page=True
+):
     """
     Console Menu that accepts choices and corresponding functions to call.
     The user must press the same button twice: once to see their choice highlited,
@@ -90,7 +97,7 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
 
         # get the choice for the button pressed
         if pressed in choices:
-            if last == pressed:   # was same button pressed?
+            if last == pressed:  # was same button pressed?
                 console.reset_console()
                 leds.set_color("LEFT", "RED")
                 leds.set_color("RIGHT", "RED")
@@ -103,21 +110,21 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
                     mission_function()
                 except Exception as ex:
                     print("**** Exception when running")
-                    raise(ex)
+                    raise (ex)
                 finally:
                     if after_run_function is not None:
                         after_run_function(name)
                     last = None
                     leds.set_color("LEFT", "GREEN")
                     leds.set_color("RIGHT", "GREEN")
-            else:   # different button pressed
+            else:  # different button pressed
                 last = pressed
                 leds.set_color("LEFT", "AMBER")
                 leds.set_color("RIGHT", "AMBER")
 
+
 if __name__ == "__main__":
     missions = Missions(debug_on=False)
-
 
     def calibrate():
         """ Placeholder for call to your calibration logic to set the black and white values for your color sensors """
@@ -126,11 +133,11 @@ if __name__ == "__main__":
 
     def show_sensors(iterations):
         """ Show the EV3 sensors, current mode and value """
-        sensors = list(list_sensors(address=[INPUT_1, INPUT_2, INPUT_3]))   # , INPUT_4
+        sensors = list(list_sensors(address=[INPUT_1, INPUT_2, INPUT_3]))  # , INPUT_4
         for _ in range(iterations):
             for sensor in sensors:
                 print("{} {}: {}".format(sensor.address, sensor.mode, sensor.value()))
-                sleep(.5)
+                sleep(0.5)
         sleep(10)
 
     def mission1():
@@ -144,21 +151,25 @@ if __name__ == "__main__":
     def mission3():
         print("mission 3...")
         sleep(1)
-        raise Exception('Raised error')
+        raise Exception("Raised error")
 
     def next():
         global current_options
         global choices
         global menu
         current_options += 1
-        menu(choices[current_options], before_run_function=None, after_run_function=None)
-    
+        menu(
+            choices[current_options], before_run_function=None, after_run_function=None
+        )
+
     def back():
         global current_options
         global choices
         global menu
         current_options -= 1
-        menu(choices[current_options], before_run_function=None, after_run_function=None)
+        menu(
+            choices[current_options], before_run_function=None, after_run_function=None
+        )
 
     def before(mission_name):
         missions.start_tone
@@ -173,16 +184,16 @@ if __name__ == "__main__":
         "right": ("M3", missions.third_run),
         "left": ("M1", missions.first_run),
         "down": ("NEXT", next),
-        "enter": ("M4", missions.fourth_run)
+        "enter": ("M4", missions.fourth_run),
     }
     CHOICES1 = {
         "up": ("M6", missions.sixth_run),
         "right": ("M7", missions.seventh_run),
         "left": ("M5", missions.fifth_run),
         "down": ("BACK", back),
-        "enter": ("M8", missions.eighth_run)
+        "enter": ("M8", missions.eighth_run),
     }
-    
-    choices = [CHOICES,CHOICES1]
+
+    choices = [CHOICES, CHOICES1]
 
     menu(choices[current_options], before_run_function=None, after_run_function=None)

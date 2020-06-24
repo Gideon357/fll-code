@@ -1,13 +1,14 @@
 #!/usr/bin/env micropython
-from time import sleep
-from sys import stderr
+# from Griffy.missions import Missions
+from multiprocessing import Process
 from os import listdir
+from sys import stderr
+from time import sleep
+
 from ev3dev2.button import Button
 from ev3dev2.console import Console
 from ev3dev2.led import Leds
-from ev3dev2.sensor import list_sensors, INPUT_1, INPUT_2, INPUT_3, INPUT_4
-# from Griffy.missions import Missions
-from multiprocessing import Process
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4, list_sensors
 
 ### WARNING! THIS MENU IS NOT FULLY OPERATIONAL SO DO NOT USE ###
 
@@ -22,11 +23,13 @@ without having to return to Brickman to find and launch a program.
 Demonstrates the EV3DEV2 Console(), Led(), and Button() classes.
 """
 
+
 def debug(str):
     """
     Additional debug method in case we do not have access to Griffy class.
     """
     print(str, file=stderr)
+
 
 def get_positions(console):
     """
@@ -45,8 +48,9 @@ def get_positions(console):
         "right": ("R", console.columns, midrow),
         "down": ("C", midcol, console.rows),
         "left": ("L", 1, midrow),
-        "enter": ("C", midcol, midrow)
+        "enter": ("C", midcol, midrow),
     }
+
 
 def wait_for_button_press(button):
     """
@@ -65,7 +69,10 @@ def wait_for_button_press(button):
             break
     return pressed
 
-def menu(choices, before_run_function=None, after_run_function=None, skip_to_next_page=True):
+
+def menu(
+    choices, before_run_function=None, after_run_function=None, skip_to_next_page=True
+):
     """
     Console Menu that accepts choices and corresponding functions to call.
     The user must press the same button twice: once to see their choice highlited,
@@ -101,7 +108,7 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
 
         # get the choice for the button pressed
         if pressed in choices:
-            if last == pressed:   # was same button pressed?
+            if last == pressed:  # was same button pressed?
                 console.reset_console()
                 leds.set_color("LEFT", "RED")
                 leds.set_color("RIGHT", "RED")
@@ -111,47 +118,49 @@ def menu(choices, before_run_function=None, after_run_function=None, skip_to_nex
                     name, mission_function = choices[pressed]
                     if before_run_function is not None:
                         before_run_function(name)
-                    if name in ('NEXT', 'BACK', 'OFF'):
+                    if name in ("NEXT", "BACK", "OFF"):
                         mission_function()
                     else:
                         # launch a sub process so it could be canceled with the enter button
                         # store the subprocess in self to reference in the stop function
                         proc = Process(target=mission_function)
-                        debug('Starting {}'.format(name))
+                        debug("Starting {}".format(name))
                         proc.start()
-                        debug('Just started {} in proc {}'.format(name, proc.pid))
+                        debug("Just started {} in proc {}".format(name, proc.pid))
                         sleep(1)
                         proc.terminate()
                         # TODO: Need to figure out when to call self.proc.join
                 except Exception as e:
                     print("**** Exception when running")
-                    debug('Exception when running {}'.format(e))
+                    debug("Exception when running {}".format(e))
                 finally:
                     if after_run_function is not None:
                         after_run_function(name)
                     last = None
                     leds.set_color("LEFT", "GREEN")
                     leds.set_color("RIGHT", "GREEN")
-            else:   # different button pressed
+            else:  # different button pressed
                 last = pressed
                 leds.set_color("LEFT", "AMBER")
                 leds.set_color("RIGHT", "AMBER")
 
+
 def terminate():
     """ A function to terminate the process created """
     global proc
-    debug('Pressed off')
+    debug("Pressed off")
     try:
         if proc is not None:
-            debug('About to kill process {}'.format(proc.pid))
+            debug("About to kill process {}".format(proc.pid))
             proc.terminate
-            debug('Killed process {}'.format(proc.pid))
+            debug("Killed process {}".format(proc.pid))
     except Exception as e:
-        debug('Exception raised: {}'.format(e))
+        debug("Exception raised: {}".format(e))
         pass
     finally:
-        debug('Setting proc to None')
-        proc = None # Silently ignore any exceptions and set proc back to none
+        debug("Setting proc to None")
+        proc = None  # Silently ignore any exceptions and set proc back to none
+
 
 def next():
     global current_options
@@ -160,6 +169,7 @@ def next():
     current_options += 1
     menu(choices[current_options], before_run_function=None, after_run_function=None)
 
+
 def back():
     global current_options
     global choices
@@ -167,13 +177,16 @@ def back():
     current_options -= 1
     menu(choices[current_options], before_run_function=None, after_run_function=None)
 
+
 def before(mission_name):
     missions.start_tone
     print("before " + mission_name)
 
+
 def after(mission_name):
     print("after " + mission_name)
     sleep(1)
+
 
 if __name__ == "__main__":
     missions = Missions()
@@ -183,16 +196,16 @@ CHOICES = {
     "right": ("M3", missions.third_run),
     "left": ("M1", missions.first_run),
     "down": ("NEXT", next),
-    "enter": ("OFF", terminate)
+    "enter": ("OFF", terminate),
 }
 CHOICES1 = {
     "up": ("M5", missions.fifth_run),
     "right": ("M6", missions.sixth_run),
     "left": ("M4", missions.fourth_run),
     "down": ("BACK", back),
-    "enter": ("OFF", terminate)
+    "enter": ("OFF", terminate),
 }
 
-choices = [CHOICES,CHOICES1]
+choices = [CHOICES, CHOICES1]
 
 menu(choices[current_options], before_run_function=None, after_run_function=None)
