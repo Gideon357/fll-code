@@ -1,4 +1,6 @@
 #!/usr/bin/env micropython
+import threading
+
 from os import listdir
 from sys import stderr
 from time import sleep
@@ -121,6 +123,14 @@ def menu(
                 last = pressed
                 leds.set_color("LEFT", "AMBER")
                 leds.set_color("RIGHT", "AMBER")
+
+
+def _cleanup():
+    """
+    Private function to run on exit
+    TODO: kill threads. add confirmation?
+    """
+    pass
 
 
 if __name__ == "__main__":
